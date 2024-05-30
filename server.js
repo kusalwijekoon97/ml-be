@@ -46,11 +46,9 @@ app.use("/user", require("./routes/user"));
 // app.use(express.static(require("path").join(__dirname, "/uploads")));
 
 mongoose
-  .connect("mongodb+srv://mlb:mfbN2H9ldlEtpoOk@cluster0.k2k69pk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-    // useFindAndModify: false,
-  })
+  .connect(
+    "mongodb+srv://mlb:mfbN2H9ldlEtpoOk@cluster0.k2k69pk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+  )
   .then((result) => {
     const port = process.env.PORT || 5002;
     app.listen(port);
@@ -59,8 +57,3 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-
-//   mongoose.connect("mongodb://mlb:HQR09yOle9zxf7BS@ac-ymuavmm-shard-00-00.k2k69pk.mongodb.net:27017,ac-ymuavmm-shard-00-01.k2k69pk.mongodb.net:27017,ac-ymuavmm-shard-00-02.k2k69pk.mongodb.net:27017/?authSource=admin&replicaSet=atlas-urxcpl-shard-0&retryWrites=true&w=majority&ssl=true", {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// });
