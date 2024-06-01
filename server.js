@@ -1,3 +1,4 @@
+// server.js
 require("dotenv").config();
 const express = require("express");
 const app = express();
@@ -6,8 +7,6 @@ const helmet = require("helmet"); // Security middleware
 const cors = require("cors"); // Enable Cross-Origin Resource Sharing
 const mongoose = require("mongoose"); // MongoDB ODM
 const routes = require("./routes/index"); // Import routes
-const authRoutes = require("./routes/auth/authRoutes")
-const protectedRoutes = require("./routes/auth/protectedRoutes")
 
 const port = process.env.PORT || 5002;
 
@@ -25,9 +24,7 @@ app.use(helmet()); // Security middleware
 app.use(cors()); // Enable CORS
 
 // Routes
-app.use("/api", routes); // Use routes defined in routes/index.js
-// app.use('/api/auth', authRoutes);
-// app.use('/api', protectedRoutes);
+app.use("/api", routes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
