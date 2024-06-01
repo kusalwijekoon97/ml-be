@@ -31,7 +31,7 @@ exports.storeCategory = async (req, res) => { //storing
 
 exports.getAllCategories = async (req, res) => { //retrieving all data
   try {
-    const categories = await Category.find({ is_active: true });
+    const categories = await Category.find({ is_active: true }).sort({ name: 1 });
     if (categories.length === 0) {
       return res.status(400).json({
         message: "No categories found"
@@ -94,7 +94,7 @@ exports.getSearchedCategories = async (req, res) => { //retrieving search-filter
     if (library) {
       query.library = { $regex: library, $options: 'i' };
     }
-    const categories = await Category.find(query);
+    const categories = await Category.find(query).sort({ name: 1 });
     if (categories.length === 0) {
       return res.status(400).json({
         message: "No categories found"
@@ -202,7 +202,7 @@ exports.storeSubCategory = async (req, res) => { //storing data
 
 exports.getAllSubCategories = async (req, res) => { //retrieving all data
   try {
-    const subCategories = await CategorySub.find({ is_active: true });
+    const subCategories = await CategorySub.find({ is_active: true }).sort({ name: 1 });
     if (subCategories.length === 0) {
       return res.status(400).json({
         message: "No sub categories found"
@@ -249,7 +249,7 @@ exports.getSearchedSubCategories = async (req, res) => { //retrieving search-fil
     if (category) {
       query.parentCategory = category;
     }
-    const subCategories = await CategorySub.find(query);
+    const subCategories = await CategorySub.find(query).sort({ name: 1 });
     if (subCategories.length === 0) {
       return res.status(400).json({
         message: "No sub categories found"
