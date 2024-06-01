@@ -1,10 +1,9 @@
+// routes\index.js
 const express = require('express');
 const router = express.Router();
-const sampleController = require('../controllers/sampleController');
+const category = require("../routes/categoryRoutes");
 
-// Define routes
-router.get('/', sampleController.home);
-router.get('/items', sampleController.getItems);
-router.post('/items', sampleController.createItem);
+// category routes
+router.use("/categories", category); 
 
 module.exports = router;
