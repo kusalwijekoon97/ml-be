@@ -1,8 +1,8 @@
-// models\materialModel.js
+// models\libraryModel.js
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const materialSchema = new Schema({
+const librarySchema = new Schema({
   name: String,
   CreatedAt: {
     type: Date,
@@ -14,4 +14,4 @@ const materialSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("Material", materialSchema);
+module.exports = mongoose.model("Library", librarySchema);
