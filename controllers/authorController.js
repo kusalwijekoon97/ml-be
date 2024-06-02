@@ -1,7 +1,7 @@
 // controllers\authorController.js
 const Author = require("../models/authorModel");
 const uploadImage = require("../middleware/fileUpload/uploadImageMiddleware");
-const s3Client = require("../s3Client");
+const s3Client = require("../utils/s3Client");
 const { S3Client, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
@@ -61,7 +61,7 @@ exports.getAllAuthors = async (req, res) => { //retrieving all data
   }
 };
 
-exports.getSingleAuthor = async (req, res) => { //retrieving single author
+exports.showAuthor = async (req, res) => { //retrieving single author
   try {
     const authorId = req.params.id;
     const author = await Author.findById(authorId);
