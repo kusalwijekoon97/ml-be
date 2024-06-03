@@ -1,21 +1,16 @@
 // routes\bookRoutes.js
 const express = require("express");
-
+const multerForBooks = require("../utils/multerForBooks"); 
 const bookController = require("../controllers/bookController");
-// const { uploadImages } = require("../middleware/uploadImage");
 const router = express.Router();
 
-router.get("/all", bookController.getAll);
-// router.get("/get-all-admin", bookController.getAllAdmin);
-// router.get("/get-by-category/:id", bookController.getBookByCategory);
-// router.post("/get-by-library-admin", bookController.getAllByLibraryAdmin);
-// router.post("/get-by-library", bookController.getAllByLibrary);
-// router.get("/get-book/:id", bookController.getBook);
-// router.get("/toggle-view-library/:id", bookController.ToggleViewLibrary);
+// Route for storing a book along with file uploads
+router.post("/store", multerForBooks.fields([
+    { name: 'coverImage', maxCount: 1 }, // Cover image (1 file)
+    { name: 'additionalImages', maxCount: 5 }, // Additional images (up to 5 files)
+    //{ name: 'material[*].formats[*].chapters[*].source', maxCount: 10 } // Audio sources (up to 10 files)
+]), bookController.storeBook);
 
-router.post("/store", bookController.storeBook);
-// router.post("/update", uploadImages, bookController.editBook);
-// router.post("/search", bookController.search);
-// router.get("/increase-book-count/:id", bookController.increaseCount);
+router.get("/all", bookController.getAll);
 
 module.exports = router;

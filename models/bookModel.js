@@ -29,50 +29,50 @@ const materialSchema = new Schema({
 const bookSchema = new Schema({
   name: {
     type: String,
-    required: true,
+    required: false,
   },
   authorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Author",
-    required: true,
+    required: false,
   },
   translatorId: {
     type: String,
     required: false,
   },
-  category: { type: [String], required: true },
+  category: { type: [String], required: false },
   subCategory: [String],
   isbn: {
     type: String,
-    required: true,
-    unique: true,
+    required: false,
+    unique: false,
   },
   coverImage: String,
   additionalImages: [String],
   description: {
     type: String,
-    required: true,
+    required: false,
   },
   publisher: {
     type: String,
-    required: true,
+    required: false,
   },
   publishDate: {
     type: String,
-    required: true,
+    required: false,
   },
   language: {
     type: String,
-    required: true,
+    required: false,
   },
   languageCode: {
     type: String,
-    required: true,
+    required: false,
   },
   firstPublisher: String,
   accessType: {
     type: String,
-    required: true,
+    required: false,
   },
   seriesNumber: Number,
   viewInLibrary: {

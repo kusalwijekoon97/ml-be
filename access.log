@@ -2,3 +2,96 @@
 2024-06-03T15:28:28.147Z info: MongoDB connected
 2024-06-03T15:28:56.346Z info: Server is started on http://localhost:5002
 2024-06-03T15:28:59.542Z info: MongoDB connected
+2024-06-03T15:29:47.248Z info: GET /api/books/all
+2024-06-03T15:30:30.816Z info: POST /api/books/store
+2024-06-03T15:31:18.481Z info: POST /api/books/store
+2024-06-03T15:34:18.034Z info: POST /api/books/store
+2024-06-03T15:36:10.815Z info: Server is started on http://localhost:5002
+2024-06-03T15:36:15.273Z info: MongoDB connected
+2024-06-03T15:36:18.855Z info: Server is started on http://localhost:5002
+2024-06-03T15:36:24.761Z info: MongoDB connected
+2024-06-03T15:36:38.369Z info: POST /api/books/store
+2024-06-03T15:36:54.946Z info: POST /api/books/store
+2024-06-03T15:41:01.548Z info: Server is started on http://localhost:5002
+2024-06-03T15:41:06.740Z info: MongoDB connected
+2024-06-03T15:42:32.070Z info: Server is started on http://localhost:5002
+2024-06-03T15:42:37.772Z info: MongoDB connected
+2024-06-03T15:42:49.095Z info: Server is started on http://localhost:5002
+2024-06-03T15:42:54.076Z info: MongoDB connected
+2024-06-03T15:45:42.416Z info: Server is started on http://localhost:5002
+2024-06-03T15:45:48.472Z info: MongoDB connected
+2024-06-03T15:46:00.354Z info: Server is started on http://localhost:5002
+2024-06-03T15:46:04.812Z info: Server is started on http://localhost:5002
+2024-06-03T15:46:09.294Z info: Server is started on http://localhost:5002
+2024-06-03T15:46:14.248Z info: MongoDB connected
+2024-06-03T15:48:34.421Z info: POST /api/books/store
+2024-06-03T15:48:34.538Z error: MulterError: Unexpected field
+    at wrappedFileFilter (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\index.js:40:19)
+    at Multipart.<anonymous> (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\lib\make-middleware.js:107:7)
+    at Multipart.emit (node:events:518:28)
+    at HeaderParser.cb (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:358:14)
+    at HeaderParser.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:162:20)
+    at SBMH.ssCb [as _cb] (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:394:37)
+    at feed (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:248:10)
+    at SBMH.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:104:16)
+    at Multipart._write (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:567:19)
+    at writeOrBuffer (node:internal/streams/writable:564:12)
+2024-06-03T15:49:24.074Z info: Server is started on http://localhost:5002
+2024-06-03T15:49:29.019Z info: MongoDB connected
+2024-06-03T15:49:44.151Z info: POST /api/authors/store
+2024-06-03T15:49:44.224Z error: Error: ENOENT: no such file or directory, open 'C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\uploads\profileImage-1717429784197-61063587'
+2024-06-03T15:51:52.893Z info: Server is started on http://localhost:5002
+2024-06-03T15:51:58.430Z info: MongoDB connected
+2024-06-03T15:52:04.110Z info: POST /api/authors/store
+2024-06-03T15:55:55.103Z info: Server is started on http://localhost:5002
+2024-06-03T15:56:00.303Z info: MongoDB connected
+2024-06-03T15:57:47.097Z info: Server is started on http://localhost:5002
+2024-06-03T15:57:50.796Z info: Server is started on http://localhost:5002
+2024-06-03T15:57:55.091Z info: MongoDB connected
+2024-06-03T15:58:03.089Z info: Server is started on http://localhost:5002
+2024-06-03T15:58:06.319Z info: MongoDB connected
+2024-06-03T15:58:11.854Z info: POST /api/authors/store
+2024-06-03T15:58:33.627Z info: POST /api/books/store
+2024-06-03T15:58:33.687Z error: MulterError: Unexpected field
+    at wrappedFileFilter (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\index.js:40:19)
+    at Multipart.<anonymous> (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\lib\make-middleware.js:107:7)
+    at Multipart.emit (node:events:518:28)
+    at HeaderParser.cb (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:358:14)
+    at HeaderParser.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:162:20)
+    at SBMH.ssCb [as _cb] (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:394:37)
+    at feed (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:248:10)
+    at SBMH.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:104:16)
+    at Multipart._write (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:567:19)
+    at writeOrBuffer (node:internal/streams/writable:564:12)
+2024-06-03T16:01:11.729Z info: Server is started on http://localhost:5002
+2024-06-03T16:01:18.741Z info: Server is started on http://localhost:5002
+2024-06-03T16:01:23.162Z info: MongoDB connected
+2024-06-03T16:01:59.682Z info: Server is started on http://localhost:5002
+2024-06-03T16:02:07.513Z info: MongoDB connected
+2024-06-03T16:02:12.971Z info: POST /api/books/store
+2024-06-03T16:02:13.038Z error: Error: ENOENT: no such file or directory, open 'C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\book_uploads\coverImage-1717430533014-487883531'
+2024-06-03T16:09:19.608Z info: Server is started on http://localhost:5002
+2024-06-03T16:09:24.303Z info: MongoDB connected
+2024-06-03T16:09:33.776Z info: POST /api/books/store
+2024-06-03T16:09:33.846Z error: MulterError: Unexpected field
+    at wrappedFileFilter (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\index.js:40:19)
+    at Multipart.<anonymous> (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\lib\make-middleware.js:107:7)
+    at Multipart.emit (node:events:518:28)
+    at HeaderParser.cb (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:358:14)
+    at HeaderParser.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:162:20)
+    at SBMH.ssCb [as _cb] (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:394:37)
+    at feed (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:248:10)
+    at SBMH.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:104:16)
+    at Multipart._write (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:567:19)
+    at writeOrBuffer (node:internal/streams/writable:564:12)
+2024-06-03T16:10:40.383Z info: Server is started on http://localhost:5002
+2024-06-03T16:10:45.862Z info: MongoDB connected
+2024-06-03T16:15:55.855Z info: Server is started on http://localhost:5002
+2024-06-03T16:15:59.408Z info: MongoDB connected
+2024-06-03T16:26:48.816Z info: Server is started on http://localhost:5002
+2024-06-03T16:26:52.414Z info: MongoDB connected
+2024-06-03T16:55:34.632Z info: POST /api/books/store
+2024-06-03T16:55:54.575Z info: Server is started on http://localhost:5002
+2024-06-03T16:55:58.616Z info: POST /api/books/store
+2024-06-03T16:55:58.872Z info: MongoDB connected
+2024-06-03T16:59:52.979Z info: POST /api/books/store
