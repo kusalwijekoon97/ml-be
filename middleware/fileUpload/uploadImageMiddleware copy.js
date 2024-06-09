@@ -2,7 +2,7 @@
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
 const sharp = require('sharp');
-const s3Client = require("../../s3Client");
+const s3Client = require("../../utils/s3Client");
 require("dotenv").config();
 
 const uploadImage = async (file) => {
