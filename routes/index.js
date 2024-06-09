@@ -15,11 +15,11 @@ const book = require("../routes/bookRoutes");
 // auth routes
 router.use("/auth", auth);
 // admin routes
-router.use("/admin", admin);
+router.use("/admins", admin);
 // user routes
-router.use("/user", user);
+router.use("/users", user);
 // librarian routes
-router.use("/librarian", librarian);
+router.use("/librarians", librarian);
 // auth routes
 router.use("/categories", category);
 // author routes
