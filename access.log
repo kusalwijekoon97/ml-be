@@ -103,3 +103,5 @@
 2024-06-09T19:55:35.822Z info: POST /api/auth/librarian/login
 2024-06-09T19:55:36.849Z info: MongoDB connected
 2024-06-09T19:56:04.723Z info: Server is started on http://localhost:5002
+2024-06-09T19:56:07.005Z info: POST /api/auth/librarian/login
+2024-06-09T19:56:08.110Z info: MongoDB connected
