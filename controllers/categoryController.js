@@ -60,7 +60,7 @@ exports.getAllCategories = async (req, res) => { //retrieving all data
 //     });
 //   }
 // };
-exports.getSingleCategory = async (req, res) => { //get a single category
+exports.showCategory = async (req, res) => { //get a single category
   try {
     const categoryId = req.params.id;
     if (!categoryId) {
@@ -216,7 +216,7 @@ exports.getAllSubCategories = async (req, res) => { //retrieving all data
   }
 };
 
-exports.getSingleSubCategory = async (req, res) => { //get a single sub category
+exports.showSubCategory = async (req, res) => { //get a single sub category
   try {
     const subCategoryId = req.params.id;
     if (!subCategoryId) {
