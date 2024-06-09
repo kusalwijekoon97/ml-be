@@ -361,3 +361,5 @@
 >>>>>>> dev-new-05_31_2024
 2024-06-09T18:54:36.943Z info: Server is started on http://localhost:5002
 2024-06-09T18:54:39.871Z info: MongoDB connected
+2024-06-09T19:38:35.620Z info: Server is started on http://localhost:5002
+2024-06-09T19:38:38.719Z info: MongoDB connected
