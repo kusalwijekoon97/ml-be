@@ -20,6 +20,10 @@ const adminSchema = new Schema({
     type: String,
     required: false,
   },
+  is_active: {
+    type: Boolean,
+    required: true,
+  },
   CreatedAt: {
     type: Date,
     default: Date.now,
