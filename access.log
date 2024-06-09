@@ -95,3 +95,182 @@
 2024-06-03T16:55:58.616Z info: POST /api/books/store
 2024-06-03T16:55:58.872Z info: MongoDB connected
 2024-06-03T16:59:52.979Z info: POST /api/books/store
+2024-06-09T08:30:28.668Z info: Server is started on http://localhost:5002
+2024-06-09T08:30:32.672Z info: MongoDB connected
+2024-06-09T08:47:00.275Z info: POST /api/authors/store
+2024-06-09T08:47:40.751Z info: GET /api/books/all
+2024-06-09T08:48:53.437Z info: POST /api/books/store
+2024-06-09T08:49:10.455Z info: POST /api/books/store
+2024-06-09T08:49:23.982Z info: POST /api/books/store
+2024-06-09T08:49:30.149Z info: GET /api/books/all
+2024-06-09T08:49:53.981Z info: GET /api/books/all
+2024-06-09T08:52:30.298Z info: Server is started on http://localhost:5002
+2024-06-09T08:52:33.856Z info: MongoDB connected
+2024-06-09T08:52:50.173Z info: POST /api/books/store
+2024-06-09T08:56:18.765Z info: Server is started on http://localhost:5002
+2024-06-09T08:56:22.039Z info: MongoDB connected
+2024-06-09T08:56:35.818Z info: POST /api/books/store
+2024-06-09T08:56:52.003Z info: POST /api/books/store
+2024-06-09T08:56:52.046Z error: MulterError: Unexpected field
+    at wrappedFileFilter (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\index.js:40:19)
+    at Multipart.<anonymous> (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\lib\make-middleware.js:107:7)
+    at Multipart.emit (node:events:518:28)
+    at HeaderParser.cb (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:358:14)
+    at HeaderParser.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:162:20)
+    at SBMH.ssCb [as _cb] (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:394:37)
+    at feed (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:200:10)
+    at SBMH.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:104:16)
+    at Multipart._write (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:567:19)
+    at writeOrBuffer (node:internal/streams/writable:564:12)
+2024-06-09T08:57:06.091Z info: Server is started on http://localhost:5002
+2024-06-09T08:57:08.904Z info: MongoDB connected
+2024-06-09T08:57:11.389Z info: POST /api/books/store
+2024-06-09T08:57:11.422Z error: MulterError: Unexpected field
+    at wrappedFileFilter (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\index.js:40:19)
+    at Multipart.<anonymous> (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\lib\make-middleware.js:107:7)
+    at Multipart.emit (node:events:518:28)
+    at HeaderParser.cb (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:358:14)
+    at HeaderParser.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:162:20)
+    at SBMH.ssCb [as _cb] (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:394:37)
+    at feed (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:248:10)
+    at SBMH.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:104:16)
+    at Multipart._write (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:567:19)
+    at writeOrBuffer (node:internal/streams/writable:564:12)
+2024-06-09T08:59:58.992Z info: Server is started on http://localhost:5002
+2024-06-09T09:00:02.150Z info: MongoDB connected
+2024-06-09T09:00:11.269Z info: Server is started on http://localhost:5002
+2024-06-09T09:00:14.118Z info: MongoDB connected
+2024-06-09T09:00:32.853Z info: Server is started on http://localhost:5002
+2024-06-09T09:00:35.807Z info: MongoDB connected
+2024-06-09T09:00:51.521Z info: Server is started on http://localhost:5002
+2024-06-09T09:00:54.631Z info: MongoDB connected
+2024-06-09T09:01:41.059Z info: Server is started on http://localhost:5002
+2024-06-09T09:01:44.041Z info: MongoDB connected
+2024-06-09T09:02:05.199Z info: Server is started on http://localhost:5002
+2024-06-09T09:02:07.991Z info: MongoDB connected
+2024-06-09T09:02:10.660Z info: Server is started on http://localhost:5002
+2024-06-09T09:02:13.633Z info: MongoDB connected
+2024-06-09T09:02:22.109Z info: Server is started on http://localhost:5002
+2024-06-09T09:02:25.058Z info: MongoDB connected
+2024-06-09T09:02:26.811Z info: POST /api/books/store
+2024-06-09T09:02:26.856Z error: MulterError: Unexpected field
+    at wrappedFileFilter (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\index.js:40:19)
+    at Multipart.<anonymous> (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\lib\make-middleware.js:107:7)
+    at Multipart.emit (node:events:518:28)
+    at HeaderParser.cb (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:358:14)
+    at HeaderParser.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:162:20)
+    at SBMH.ssCb [as _cb] (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:394:37)
+    at feed (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:248:10)
+    at SBMH.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:104:16)
+    at Multipart._write (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:567:19)
+    at writeOrBuffer (node:internal/streams/writable:564:12)
+2024-06-09T09:03:07.726Z info: Server is started on http://localhost:5002
+2024-06-09T09:03:10.864Z info: MongoDB connected
+2024-06-09T09:04:38.039Z info: Server is started on http://localhost:5002
+2024-06-09T09:04:41.113Z info: MongoDB connected
+2024-06-09T09:09:42.523Z info: Server is started on http://localhost:5002
+2024-06-09T09:09:45.588Z info: MongoDB connected
+2024-06-09T09:09:54.191Z info: Server is started on http://localhost:5002
+2024-06-09T09:09:57.296Z info: MongoDB connected
+2024-06-09T09:10:05.836Z info: Server is started on http://localhost:5002
+2024-06-09T09:10:08.683Z info: MongoDB connected
+2024-06-09T09:10:14.298Z info: Server is started on http://localhost:5002
+2024-06-09T09:10:17.082Z info: MongoDB connected
+2024-06-09T09:12:31.776Z info: Server is started on http://localhost:5002
+2024-06-09T09:12:34.887Z info: MongoDB connected
+2024-06-09T09:13:03.764Z info: Server is started on http://localhost:5002
+2024-06-09T09:13:06.666Z info: MongoDB connected
+2024-06-09T09:13:33.886Z info: Server is started on http://localhost:5002
+2024-06-09T09:13:36.839Z info: MongoDB connected
+2024-06-09T09:18:56.497Z info: POST /api/books/store
+2024-06-09T09:18:56.532Z error: MulterError: Unexpected field
+    at wrappedFileFilter (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\index.js:40:19)
+    at Multipart.<anonymous> (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\multer\lib\make-middleware.js:107:7)
+    at Multipart.emit (node:events:518:28)
+    at HeaderParser.cb (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:358:14)
+    at HeaderParser.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:162:20)
+    at SBMH.ssCb [as _cb] (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:394:37)
+    at feed (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:248:10)
+    at SBMH.push (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\streamsearch\lib\sbmh.js:104:16)
+    at Multipart._write (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen- MyLibrary - NEW - 19_05_2024\backend\ml-be\node_modules\busboy\lib\types\multipart.js:567:19)
+    at writeOrBuffer (node:internal/streams/writable:564:12)
+2024-06-09T09:24:01.594Z info: POST /api/books/store
+2024-06-09T09:24:01.657Z info: POST /api/books/store
+2024-06-09T09:29:18.129Z info: Server is started on http://localhost:5002
+2024-06-09T09:29:21.083Z info: MongoDB connected
+2024-06-09T09:29:25.966Z info: Server is started on http://localhost:5002
+2024-06-09T09:29:28.999Z info: MongoDB connected
+2024-06-09T09:31:05.683Z info: POST /api/books/store
+2024-06-09T09:33:00.508Z info: POST /api/books/store
+2024-06-09T09:35:17.432Z info: Server is started on http://localhost:5002
+2024-06-09T09:35:20.513Z info: MongoDB connected
+2024-06-09T09:37:43.183Z info: POST /api/books/store
+2024-06-09T09:38:04.245Z info: Server is started on http://localhost:5002
+2024-06-09T09:38:07.351Z info: MongoDB connected
+2024-06-09T09:39:11.006Z info: Server is started on http://localhost:5002
+2024-06-09T09:39:13.906Z info: Server is started on http://localhost:5002
+2024-06-09T09:39:16.680Z info: MongoDB connected
+2024-06-09T09:39:18.263Z info: POST /api/books/store
+2024-06-09T09:42:29.460Z info: Server is started on http://localhost:5002
+2024-06-09T09:42:32.657Z info: MongoDB connected
+2024-06-09T09:42:36.936Z info: POST /api/books/store
+2024-06-09T09:44:59.549Z info: Server is started on http://localhost:5002
+2024-06-09T09:45:02.699Z info: MongoDB connected
+2024-06-09T09:45:08.909Z info: Server is started on http://localhost:5002
+2024-06-09T09:45:11.958Z info: MongoDB connected
+2024-06-09T09:45:18.730Z info: Server is started on http://localhost:5002
+2024-06-09T09:45:21.798Z info: MongoDB connected
+2024-06-09T09:45:24.886Z info: POST /api/books/store
+2024-06-09T09:46:06.373Z info: Server is started on http://localhost:5002
+2024-06-09T09:46:09.487Z info: MongoDB connected
+2024-06-09T09:46:13.412Z info: POST /api/books/store
+2024-06-09T09:46:46.915Z info: Server is started on http://localhost:5002
+2024-06-09T09:46:49.887Z info: MongoDB connected
+2024-06-09T09:46:53.547Z info: POST /api/books/store
+2024-06-09T09:47:35.001Z info: Server is started on http://localhost:5002
+2024-06-09T09:47:38.157Z info: POST /api/books/store
+2024-06-09T09:47:38.192Z info: MongoDB connected
+2024-06-09T09:50:23.988Z info: Server is started on http://localhost:5002
+2024-06-09T09:50:26.986Z info: MongoDB connected
+2024-06-09T09:50:30.390Z info: POST /api/books/store
+2024-06-09T10:05:31.257Z info: Server is started on http://localhost:5002
+2024-06-09T10:05:34.659Z info: MongoDB connected
+2024-06-09T10:06:06.065Z info: Server is started on http://localhost:5002
+2024-06-09T10:06:09.249Z info: MongoDB connected
+2024-06-09T10:06:42.152Z info: Server is started on http://localhost:5002
+2024-06-09T10:06:45.622Z info: MongoDB connected
+2024-06-09T10:06:54.090Z info: POST /api/books/store
+2024-06-09T10:08:47.016Z info: Server is started on http://localhost:5002
+2024-06-09T10:08:50.266Z info: MongoDB connected
+2024-06-09T10:08:51.397Z info: POST /api/books/store
+2024-06-09T10:09:20.599Z info: Server is started on http://localhost:5002
+2024-06-09T10:09:23.743Z info: MongoDB connected
+2024-06-09T10:09:58.085Z info: Server is started on http://localhost:5002
+2024-06-09T10:10:01.721Z info: MongoDB connected
+2024-06-09T10:10:02.906Z info: Server is started on http://localhost:5002
+2024-06-09T10:10:06.163Z info: Server is started on http://localhost:5002
+2024-06-09T10:10:09.616Z info: MongoDB connected
+2024-06-09T10:10:29.064Z info: POST /api/books/store
+2024-06-09T10:14:13.355Z info: Server is started on http://localhost:5002
+2024-06-09T10:14:16.838Z info: MongoDB connected
+2024-06-09T10:14:37.018Z info: Server is started on http://localhost:5002
+2024-06-09T10:14:41.204Z info: MongoDB connected
+2024-06-09T10:14:49.340Z info: POST /api/books/store
+2024-06-09T10:19:14.948Z info: Server is started on http://localhost:5002
+2024-06-09T10:19:18.326Z info: MongoDB connected
+2024-06-09T10:25:56.981Z info: Server is started on http://localhost:5002
+2024-06-09T10:26:00.190Z info: MongoDB connected
+2024-06-09T10:26:03.625Z info: Server is started on http://localhost:5002
+2024-06-09T10:26:06.740Z info: MongoDB connected
+2024-06-09T10:30:13.313Z info: Server is started on http://localhost:5002
+2024-06-09T10:30:16.229Z info: MongoDB connected
+2024-06-09T10:30:31.228Z info: Server is started on http://localhost:5002
+2024-06-09T10:30:34.011Z info: MongoDB connected
+2024-06-09T10:31:40.064Z info: Server is started on http://localhost:5002
+2024-06-09T10:31:43.249Z info: MongoDB connected
+2024-06-09T10:32:16.359Z info: Server is started on http://localhost:5002
+2024-06-09T10:32:19.405Z info: MongoDB connected
+2024-06-09T10:32:21.613Z info: Server is started on http://localhost:5002
+2024-06-09T10:32:24.621Z info: MongoDB connected
+2024-06-09T10:33:06.068Z info: Server is started on http://localhost:5002
+2024-06-09T10:33:09.087Z info: MongoDB connected

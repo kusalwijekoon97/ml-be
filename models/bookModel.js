@@ -1,3 +1,4 @@
+//models/BookModel.js
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -45,7 +46,7 @@ const bookSchema = new Schema({
   isbn: {
     type: String,
     required: false,
-    unique: false,
+    unique: true,
   },
   coverImage: String,
   additionalImages: [String],
@@ -79,11 +80,14 @@ const bookSchema = new Schema({
     type: Boolean,
     default: true,
   },
-  series: [String],
+  series: {
+    type: String,
+    required: false,
+  },
   material: [materialSchema],
   is_active: {
     type: Boolean,
-    default: true
+    default: true,
   },
 });
 
