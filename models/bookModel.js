@@ -3,92 +3,49 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const sourceSchema = new Schema({
-  voice: String,
-  duration: String,
-  source: String,
+  voice: { type: String, required: true },
+  duration: { type: String, required: true },
+  source: { type: String, required: true },
 });
 
 const chapterSchema = new Schema({
-  chapterNumber: String,
-  chapterName: String,
-  source: [sourceSchema],
+  chapterNumber: { type: String, required: true },
+  chapterName: { type: String, required: true },
+  source: { type: [sourceSchema], required: true },
 });
 
 const formatSchema = new Schema({
-  formatType: String,
-  Publisher: String,
-  PublishedDate: String,
-  chapters: [chapterSchema],
+  formatType: { type: String, required: true },
+  Publisher: { type: String, required: true },
+  PublishedDate: { type: String, required: true },
+  chapters: { type: [chapterSchema], required: true },
 });
 
 const materialSchema = new Schema({
-  type: String,
-  totalDuration: Number,
-  formats: [formatSchema],
+  type: { type: String, required: true },
+  totalDuration: { type: Number, required: true },
+  formats: { type: [formatSchema], required: true },
 });
 
 const bookSchema = new Schema({
-  name: {
-    type: String,
-    required: false,
-  },
-  authorId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Author",
-    required: false,
-  },
-  translatorId: {
-    type: String,
-    required: false,
-  },
-  category: { type: [String], required: false },
-  subCategory: [String],
-  isbn: {
-    type: String,
-    required: false,
-    unique: true,
-  },
-  coverImage: String,
-  additionalImages: [String],
-  description: {
-    type: String,
-    required: false,
-  },
-  publisher: {
-    type: String,
-    required: false,
-  },
-  publishDate: {
-    type: String,
-    required: false,
-  },
-  language: {
-    type: String,
-    required: false,
-  },
-  languageCode: {
-    type: String,
-    required: false,
-  },
-  firstPublisher: String,
-  accessType: {
-    type: String,
-    required: false,
-  },
-  seriesNumber: Number,
-  viewInLibrary: {
-    type: Boolean,
-    default: true,
-  },
-  series: {
-    type: String,
-    required: false,
-  },
-  material: [materialSchema],
-  is_active: {
-    type: Boolean,
-    default: true,
-  },
+  name: { type: String, required: true },
+  authorId: { type: String, required: true },
+  translatorId: { type: String },
+  category: { type: [String], required: true },
+  subCategory: { type: [String] },
+  isbn: { type: String, required: true },
+  coverImage: { type: String },
+  additionalImages: { type: [String] },
+  description: { type: String, required: true },
+  publisher: { type: String, required: true },
+  publishDate: { type: String, required: true },
+  language: { type: String, required: true },
+  languageCode: { type: String, required: true },
+  firstPublisher: { type: String },
+  accessType: { type: String, required: true },
+  seriesNumber: { type: Number },
+  series: { type: [String] },
+  material: { type: [materialSchema], required: true },
 });
 
 module.exports = mongoose.model("Book", bookSchema);

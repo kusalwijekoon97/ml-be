@@ -1,129 +1,76 @@
 const Book = require("../models/bookModel");
 const Author = require("../models/authorModel");
-const uploadFiles = require("../middleware/fileUpload/uploadFilesMiddlewareForBooks");
+
+const uploadImage = require("../middleware/fileUpload/middlewareUploadImage");
+const uploadAudio = require("../middleware/fileUpload/middlewareUploadAudio");
+const uploadText = require("../middleware/fileUpload/middlewareUploadText");
+
+const s3Client = require("../utils/s3Client");
+const { S3Client, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 exports.storeBook = async (req, res) => {
-  console.log("Payload received:", req.body);
   try {
-    const {
-      name,
-      authorId,
-      translatorId,
-      category,
-      subCategory,
-      isbn,
-      coverImage,
-      additionalImages,
-      description,
-      publisher,
-      publishDate,
-      language,
-      languageCode,
-      firstPublisher,
-      accessType,
-      seriesNumber,
-      series,
-      material,
+    const {name,authorId,translatorId,category,subCategory,isbn,coverImage,additionalImages,description,publisher,publishDate,language,languageCode,firstPublisher,accessType,seriesNumber,Series,material,
     } = req.body;
 
-    // console.log("material received:", req.body.material);
-
-    const materialSources = req.body.materialSources || [];
-
-    // console.log("materialSources received:", req.body.materialSources);
-
-    const existingBook = await Book.findOne({ isbn });
-    if (existingBook) {
-      return res.status(400).json({ message: "ISBN already exists" });
+    // Check if ISBN already exists
+    const isbnExists = await Book.exists({ isbn });
+    if (isbnExists) {
+      return res.status(400).json({
+        message: "Cannot add another book with the same ISBN",
+      });
     }
 
-    // Validate author existence (if provided)
-    if (req.body.authorId) {
-      const authorExists = await Author.findById(req.body.authorId);
-      if (!authorExists) {
-        return res.status(400).json({ message: "Author not found" });
-      }
+    // Check if author exists
+    const authorExists = await Author.exists({ _id: authorId });
+    if (!authorExists) {
+      return res.status(400).json({
+        message: "Author does not exist.",
+      });
     }
 
-    // Validate category existence (if provided)
-    if (req.body.category) {
-      const parsedCategory = JSON.parse(req.body.category);
-      if (!Array.isArray(parsedCategory)) {
-        return res.status(400).json({
-          message: "Invalid category format (must be an array of strings)",
-        });
-      }
-      const validCategories = await Promise.all(
-        parsedCategory.map(
-          async (category) => await Category.exists({ name: category })
-        ) // Assuming you have a Category model
+    // Upload cover image
+    const profileImageName = await uploadImage(req.file);
+
+    if (req.file) {
+      req.body.coverImage = await uploadImage(req.file);
+    }
+
+    // Upload additional images
+    if (req.files && req.files.length > 0) {
+      req.body.additionalImages = await Promise.all(
+        req.files.map(async (file) => uploadImage(file))
       );
-      if (validCategories.some((exists) => !exists)) {
-        return res.status(400).json({ message: "Invalid category provided" });
-      }
     }
 
-    // Upload cover image and additional images (unchanged)
-    const coverImageURL = await uploadFiles(req.files.coverImage[0]);
-    const additionalImagesURLs = await Promise.all(
-      req.files.additionalImages.map(uploadFiles)
-    );
+    // Upload audio files
+    if (req.files && req.files.length > 0) {
+      req.body.audioFiles = await Promise.all(
+        req.files.map(async (file) => uploadAudio(file))
+      );
+    }
 
-    // Upload material sources to S3 and update source locations
-    const materialSourcesURLs = await Promise.all(
-      req.files.materialSources.map(async (file, index) => {
-        if (file === "null") return null;
-        const sourceURL = await uploadFiles(file);
-        return sourceURL;
-      })
-    );
+    // Upload text files
+    if (req.files && req.files.length > 0) {
+      req.body.textFiles = await Promise.all(
+        req.files.map(async (file) => uploadText(file))
+      );
+    }
 
-    // Parse JSON fields
-    const parsedCategory = JSON.parse(category);
-    const parsedSubCategory = JSON.parse(subCategory);
-    const parsedSeries = JSON.parse(series);
-    const parsedMaterial = JSON.parse(material);
-    // console.log("parsedMaterial:", parsedMaterial);
-    // Create book object with URLs
-    const book = new Book({
-      name,
-      authorId,
-      translatorId,
-      category: parsedCategory,
-      subCategory: parsedSubCategory,
-      isbn,
-      description,
-      publisher,
-      publishDate,
-      language,
-      languageCode,
-      firstPublisher,
-      accessType,
-      seriesNumber,
-      series: parsedSeries,
-      coverImage: coverImageURL,
-      additionalImages: additionalImagesURLs,
-      material: parsedMaterial.map((item) => ({
-        ...item,
-        formats: item.formats.map((format) => ({
-          ...format,
-          chapters: format.chapters.map((chapter) => ({
-            ...chapter,
-            source: chapter.source.map((source, sourceIndex) => ({
-              ...source,
-              source: materialSourcesURLs[sourceIndex], // Update source with uploaded URL
-            })),
-          })),
-        })),
-      })),
-    });
+    // Create book
+    const response = await Book.create(req.body);
 
-    // Save book to database
-    await book.save();
-
-    res.status(200).json({ message: "Book stored successfully", book });
+    if (response) {
+      return res.status(200).json({
+        message: "Book Created",
+      });
+    } else {
+      return res.status(400).json({
+        message: "Book Creation failed.",
+      });
+    }
   } catch (err) {
-    console.error("Error during book creation:", err);
     res.status(500).json({
       message: err.toString(),
     });
