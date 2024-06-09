@@ -55,7 +55,7 @@ exports.storeAdmin = async (req, res) => { //storing an admin
 
 exports.getAllAdmins = async (req, res) => { // retrieving all data
   try {
-    const admins = await Admin.find({ is_active: true }).sort({ name: 1 });
+    const admins = await Admin.find().sort({ name: 1 });
 
     if (admins.length === 0) {
       return res.status(400).json({
@@ -76,7 +76,7 @@ exports.getAllAdmins = async (req, res) => { // retrieving all data
 exports.showAdmin = async (req, res) => { // retrieving single admin
   try {
     const adminId = req.params.id;
-    const admin = await Admin.findOne({ _id: adminId, is_active: true });
+    const admin = await Admin.findOne({ _id: adminId });
     if (!admin) {
       return res.status(404).json({
         message: "Admin not found"

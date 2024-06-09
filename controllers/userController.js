@@ -60,7 +60,7 @@ exports.getAllUsers = async (req, res) => {
   // retrieving all data
   try {
     try {
-      User.find({is_active: true, firstName: 1})
+      User.find({firstName: 1})
         // .populate("libraries plans.plan oldPlans.plan")
         .select("-password -otpCode -emailCode -passwordRecoveryToken")
         //   .populate("plan libraries")
@@ -83,7 +83,7 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUsersByLibrary = async (req, res) => {
   try {
-    User.find({ libraries: { $in: req.body.libraries }, is_active: true, firstName: 1 })
+    User.find({ libraries: { $in: req.body.libraries }, firstName: 1 })
       .populate("libraries")
       .select("-password -otpCode -emailCode -passwordRecoveryToken")
       //   .populate("plan libraries")
@@ -101,7 +101,7 @@ exports.showUser = async (req, res) => {
   // retrieving single user
   try {
     const userId = req.params.id;
-    const user = await User.findOne({ _id: userId, is_active: true })
+    const user = await User.findOne({ _id: userId })
       // .populate("plans.plan oldPlans.plan libraries")
       //   .populate("plan libraries")
       .select("-password -otpCode -emailCode -passwordRecoveryToken");

@@ -61,7 +61,7 @@ exports.getAllLibrarians = async (req, res) => {
   // retrieving all data
   try {
     try {
-      Librarian.find({is_active: true, firstName: 1})
+      Librarian.find({firstName: 1})
         // .populate("libraries plans.plan oldPlans.plan")
         .select("-password -otpCode -emailCode -passwordRecoveryToken")
         //   .populate("plan libraries")
@@ -84,7 +84,7 @@ exports.getAllLibrarians = async (req, res) => {
 
 exports.getLibrariansByLibrary = async (req, res) => {
   try {
-    Librarian.find({ libraries: { $in: req.body.libraries }, is_active: true, firstName: 1 })
+    Librarian.find({ libraries: { $in: req.body.libraries }, firstName: 1 })
       .populate("libraries")
       .select("-password -otpCode -emailCode -passwordRecoveryToken")
       //   .populate("plan libraries")
@@ -102,7 +102,7 @@ exports.showLibrarian = async (req, res) => {
   // retrieving single librarian
   try {
     const librarianId = req.params.id;
-    const librarian = await Librarian.findOne({ _id: librarianId, is_active: true })
+    const librarian = await Librarian.findOne({ _id: librarianId })
       // .populate("plans.plan oldPlans.plan libraries")
       //   .populate("plan libraries")
       .select("-password -otpCode -emailCode -passwordRecoveryToken");
