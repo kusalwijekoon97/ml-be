@@ -59,6 +59,10 @@ const librarianSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  is_active: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Librarian", librarianSchema);
