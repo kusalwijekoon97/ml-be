@@ -23,11 +23,16 @@ const generateToken = (payload) => {
 // login ***********************************************************************
 exports.loginUser = async (req, res, next) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
+  
   let loadedUser;
 
   User.findOne({ email: email.toLowerCase() })
     .populate("libraries")
-    .select("-otpCode -emailCode -passwordRecoveryToken")
+    .select("-otpCode -emailCode -passwordRecoveryToken -password")
     .then((user) => {
       if (!user) {
         const error = new Error("No user found by this email");
@@ -49,7 +54,7 @@ exports.loginUser = async (req, res, next) => {
       res.status(200).json({
         message: "Logged In Successfully",
         token,
-        user: loadedUser,
+        user: loadedUser._id,
       });
     })
     .catch((err) => {
@@ -65,7 +70,7 @@ exports.loginLibrarian = async (req, res, next) => {
 
   Librarian.findOne({ email: email.toLowerCase() })
     .populate("libraries")
-    .select("-otpCode -emailCode -passwordRecoveryToken")
+    .select("-otpCode -emailCode -passwordRecoveryToken -password")
     .then(async (user) => {
       if (!user) {
         const admin = await Admin.findOne({ email: email.toLowerCase() });
@@ -94,7 +99,7 @@ exports.loginLibrarian = async (req, res, next) => {
       res.status(200).json({
         message: "Logged In Successfully",
         token,
-        user: loadedUser,
+        user: loadedUser._id,
         userType,
       });
     })
