@@ -1,14 +1,14 @@
 // controllers\authorController.js
 const Author = require("../models/authorModel");
-const uploadImage = require("../middleware/fileUpload/uploadImageMiddleware");
-const s3Client = require("../s3Client");
+const uploadFiles = require("../middleware/fileUpload/uploadFilesMiddleware");
+const s3Client = require("../utils/s3Client");
 const { S3Client, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 exports.storeAuthor = async (req, res) => { //storing an author
   try {
     const { firstname, lastname, died, penName, nationality, description, firstPublishDate, position, income } = req.body;
-    const profileImageName = await uploadImage(req.file);
+    const profileImageName = await uploadFiles(req.file);
 
     const response = await Author.create({ ...req.body, profileImage: profileImageName });
     if (response) {
@@ -61,7 +61,7 @@ exports.getAllAuthors = async (req, res) => { //retrieving all data
   }
 };
 
-exports.getSingleAuthor = async (req, res) => { //retrieving single author
+exports.showAuthor = async (req, res) => { //retrieving single author
   try {
     const authorId = req.params.id;
     const author = await Author.findById(authorId);
@@ -131,7 +131,7 @@ exports.updateAuthor = async (req, res) => { //updating author
     
     let profileImageName = null;
     if (req.file) {
-      profileImageName = await uploadImage(req.file);
+      profileImageName = await uploadFiles(req.file);
       if (author.profileImage) {
         const deleteObjectParams = {
           Bucket: process.env.S3_BUCKET_NAME,
