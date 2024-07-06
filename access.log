@@ -359,6 +359,7 @@
 2024-06-09T18:51:16.914Z info: Server is started on http://localhost:5002
 2024-06-09T18:51:19.768Z info: MongoDB connected
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> dev-new-05_31_2024
 2024-06-09T18:54:36.943Z info: Server is started on http://localhost:5002
 2024-06-09T18:54:39.871Z info: MongoDB connected
@@ -393,3 +394,13 @@
 >>>>>>> origin/user_auth-06_09_2024
 2024-06-09T19:58:37.227Z info: Server is started on http://localhost:5002
 2024-06-09T19:58:40.288Z info: MongoDB connected
+=======
+2024-07-06T11:41:40.292Z info: Server is started on http://localhost:5002
+2024-07-06T11:41:43.520Z info: MongoDB connected
+2024-07-06T11:41:54.263Z info: Server is started on http://localhost:5002
+2024-07-06T11:41:59.832Z info: MongoDB connected
+2024-07-06T11:46:28.385Z info: Server is started on http://localhost:5002
+2024-07-06T11:46:32.627Z info: MongoDB connected
+2024-07-06T11:49:46.779Z info: Server is started on http://localhost:5002
+2024-07-06T11:49:53.899Z info: MongoDB connected
+>>>>>>> dev-new-05_31_2024

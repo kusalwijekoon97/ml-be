@@ -8,6 +8,7 @@ const cors = require("cors"); // Enable Cross-Origin Resource Sharing
 const mongoose = require("mongoose"); // MongoDB ODM
 const routes = require("./routes/index"); // Import routes
 const logger = require("./utils/logger"); // Import logger
+const path = require('path');
 
 const port = process.env.PORT || 5002;
 
@@ -36,6 +37,11 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/api", routes);
+
+// 404 Middleware
+app.use((req, res, next) => {
+  res.status(404).sendFile(path.join(__dirname, "./src/pages/404.html"));
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
