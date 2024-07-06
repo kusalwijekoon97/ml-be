@@ -1,7 +1,3 @@
 /node_modules
-<<<<<<< HEAD
-access.log
-=======
 /access.log
 /error/log
->>>>>>> dev-new-05_31_2024
