@@ -133,3 +133,7 @@
 2024-07-07T11:36:56.282Z info: MongoDB connected
 2024-07-07T11:37:01.635Z info: Server is started on http://localhost:5002
 2024-07-07T11:37:05.699Z info: MongoDB connected
+2024-07-07T11:38:11.071Z info: Server is started on http://localhost:5002
+2024-07-07T11:38:16.418Z info: MongoDB connected
+2024-07-07T11:40:44.832Z info: POST /api/advertisements/store
+2024-07-07T11:41:40.037Z info: GET /api/advertisements/all
