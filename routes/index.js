@@ -11,6 +11,7 @@ const category = require("../routes/categoryRoutes");
 const material = require("../routes/materialRoutes");
 const library = require("../routes/libraryRoutes");
 const book = require("../routes/bookRoutes");
+const advertisement = require("../routes/advetisementRoutes");
 
 // auth routes
 router.use("/auth", auth);
@@ -30,5 +31,7 @@ router.use("/materials", material);
 router.use("/libraries", library);
 // book routes
 router.use("/books", book);
+// advetisement routes
+router.use("/advertisements", advertisement);
 
 module.exports = router;
