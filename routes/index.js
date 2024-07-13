@@ -12,6 +12,7 @@ const material = require("../routes/materialRoutes");
 const library = require("../routes/libraryRoutes");
 const book = require("../routes/bookRoutes");
 const advertisement = require("../routes/advetisementRoutes");
+const mobileUser = require("../routes/mobileUserRoutes");
 
 // auth routes
 router.use("/auth", auth);
@@ -33,5 +34,7 @@ router.use("/libraries", library);
 router.use("/books", book);
 // advetisement routes
 router.use("/advertisements", advertisement);
+// mobileUser routes
+router.use("/mobile-users", mobileUser);
 
 module.exports = router;
