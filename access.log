@@ -453,5 +453,76 @@
 2024-07-07T11:38:16.418Z info: MongoDB connected
 2024-07-07T11:40:44.832Z info: POST /api/advertisements/store
 2024-07-07T11:41:40.037Z info: GET /api/advertisements/all
+<<<<<<< HEAD
 >>>>>>> dev-new-05_31_2024
 2024-07-07T11:47:32.266Z info: Server is started on http://localhost:5002
+=======
+2024-07-13T08:03:30.110Z info: Server is started on http://localhost:5002
+2024-07-13T08:03:41.968Z info: MongoDB connected
+2024-07-13T08:36:36.804Z info: Server is started on http://localhost:5002
+2024-07-13T08:36:42.239Z info: MongoDB connected
+2024-07-13T08:37:31.190Z info: Server is started on http://localhost:5002
+2024-07-13T08:37:41.798Z info: MongoDB connected
+2024-07-13T08:37:45.523Z info: Server is started on http://localhost:5002
+2024-07-13T08:37:49.433Z info: MongoDB connected
+2024-07-13T08:37:58.861Z info: Server is started on http://localhost:5002
+2024-07-13T08:38:07.850Z info: Server is started on http://localhost:5002
+2024-07-13T08:38:19.226Z info: MongoDB connected
+2024-07-13T08:42:37.109Z info: Server is started on http://localhost:5002
+2024-07-13T08:42:55.246Z info: Server is started on http://localhost:5002
+2024-07-13T08:43:01.265Z info: Server is started on http://localhost:5002
+2024-07-13T08:43:23.638Z info: MongoDB connected
+2024-07-13T08:46:02.770Z info: Server is started on http://localhost:5002
+2024-07-13T08:46:11.398Z info: MongoDB connected
+2024-07-13T08:46:22.440Z info: Server is started on http://localhost:5002
+2024-07-13T08:46:52.584Z error: MongooseServerSelectionError: Server selection timed out after 30000 ms
+    at _handleConnectionErrors (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen - my library\Shengen- MyLibrary - 19_05_2024\backend\ml-be\node_modules\mongoose\lib\connection.js:896:11)
+    at NativeConnection.openUri (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen - my library\Shengen- MyLibrary - 19_05_2024\backend\ml-be\node_modules\mongoose\lib\connection.js:847:11)
+2024-07-13T09:02:09.264Z info: Server is started on http://localhost:5002
+2024-07-13T09:02:22.574Z info: MongoDB connected
+2024-07-13T09:40:36.166Z info: Server is started on http://localhost:5002
+2024-07-13T09:40:44.950Z info: MongoDB connected
+2024-07-13T09:41:15.523Z info: Server is started on http://localhost:5002
+2024-07-13T09:41:18.594Z info: MongoDB connected
+2024-07-13T09:41:45.358Z info: Server is started on http://localhost:5002
+2024-07-13T09:42:15.644Z error: MongooseServerSelectionError: Server selection timed out after 30000 ms
+    at _handleConnectionErrors (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen - my library\Shengen- MyLibrary - 19_05_2024\backend\ml-be\node_modules\mongoose\lib\connection.js:896:11)
+    at NativeConnection.openUri (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen - my library\Shengen- MyLibrary - 19_05_2024\backend\ml-be\node_modules\mongoose\lib\connection.js:847:11)
+2024-07-13T09:42:17.697Z info: Server is started on http://localhost:5002
+2024-07-13T09:42:28.927Z info: MongoDB connected
+2024-07-13T09:42:36.321Z info: Server is started on http://localhost:5002
+2024-07-13T09:42:42.821Z info: Server is started on http://localhost:5002
+2024-07-13T09:42:53.327Z info: MongoDB connected
+2024-07-13T09:44:15.595Z info: Server is started on http://localhost:5002
+2024-07-13T09:44:26.276Z info: MongoDB connected
+2024-07-13T09:44:39.867Z info: Server is started on http://localhost:5002
+2024-07-13T09:44:42.251Z info: Server is started on http://localhost:5002
+2024-07-13T09:44:54.950Z info: Server is started on http://localhost:5002
+2024-07-13T09:45:01.648Z info: Server is started on http://localhost:5002
+2024-07-13T09:45:46.628Z info: MongoDB connected
+2024-07-13T09:48:46.254Z info: Server is started on http://localhost:5002
+2024-07-13T09:48:49.632Z info: MongoDB connected
+2024-07-13T09:49:57.884Z info: Server is started on http://localhost:5002
+2024-07-13T09:50:07.799Z info: MongoDB connected
+2024-07-13T09:50:10.681Z info: Server is started on http://localhost:5002
+2024-07-13T09:50:30.485Z info: MongoDB connected
+2024-07-13T09:59:24.021Z info: Server is started on http://localhost:5002
+2024-07-13T09:59:31.620Z info: Server is started on http://localhost:5002
+2024-07-13T09:59:39.829Z info: MongoDB connected
+2024-07-13T09:59:58.561Z info: Server is started on http://localhost:5002
+2024-07-13T10:00:10.588Z info: Server is started on http://localhost:5002
+2024-07-13T10:00:31.981Z info: Server is started on http://localhost:5002
+2024-07-13T10:00:49.106Z info: Server is started on http://localhost:5002
+2024-07-13T10:00:57.234Z info: Server is started on http://localhost:5002
+2024-07-13T10:01:05.915Z info: MongoDB connected
+2024-07-13T10:08:45.894Z info: Server is started on http://localhost:5002
+2024-07-13T10:08:53.271Z info: Server is started on http://localhost:5002
+2024-07-13T10:09:07.467Z info: POST /api/mobile-users/store
+2024-07-13T10:09:11.242Z info: MongoDB connected
+2024-07-13T10:23:41.303Z info: POST /api/auth/login
+2024-07-13T10:24:54.760Z info: POST /api/auth/login
+2024-07-13T10:26:20.603Z info: POST /api/auth/librarian/login
+2024-07-13T10:31:36.942Z info: POST /api/auth/librarian/login
+>>>>>>> dev-new-05_31_2024
+2024-07-13T10:43:54.443Z info: Server is started on http://localhost:5002
+2024-07-13T10:43:57.074Z info: MongoDB connected
