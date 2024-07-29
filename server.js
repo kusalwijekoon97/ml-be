@@ -27,7 +27,30 @@ app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use(morgan("dev")); // Logging middleware
 app.use(helmet()); // Security middleware
-app.use(cors()); // Enable CORS
+
+
+// CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://13.215.35.0/',
+];
+
+const corsOptions = {
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      // Allow requests with no origin (e.g., mobile apps or curl requests)
+      callback(null, true);
+    } else {
+      // Reject requests from disallowed origins
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+};
+
+app.use(cors(corsOptions)); // Enable CORS with options
+
 
 // Middleware to log requests
 app.use((req, res, next) => {

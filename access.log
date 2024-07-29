@@ -526,3 +526,28 @@
 >>>>>>> dev-new-05_31_2024
 2024-07-13T10:43:54.443Z info: Server is started on http://localhost:5002
 2024-07-13T10:43:57.074Z info: MongoDB connected
+2024-07-21T19:18:42.387Z info: Server is started on http://localhost:5002
+2024-07-21T19:18:45.955Z info: MongoDB connected
+2024-07-21T19:18:54.639Z info: GET /api/librarians/all
+2024-07-21T19:18:57.077Z info: GET /api/categories/main/all
+2024-07-21T19:18:57.088Z info: GET /api/categories/sub/all
+2024-07-21T19:19:08.398Z info: POST /api/categories/main/store
+2024-07-21T19:19:09.269Z info: GET /api/categories/main/all
+2024-07-21T19:19:09.282Z info: GET /api/categories/sub/all
+2024-07-28T10:49:02.138Z info: Server is started on http://localhost:5002
+2024-07-28T10:49:05.505Z info: MongoDB connected
+2024-07-28T11:30:26.901Z info: GET /api/librarians/all
+2024-07-28T11:30:30.077Z info: GET /api/categories/main/all
+2024-07-28T11:30:30.095Z info: GET /api/categories/sub/all
+2024-07-28T11:30:34.428Z info: GET /api/materials/all
+2024-07-28T11:30:36.788Z info: GET /api/authors/all
+2024-07-28T11:30:46.203Z info: POST /api/authors/delete/66351b7ed4f2e33d2c5f20ee
+2024-07-28T11:30:47.152Z info: GET /api/authors/all
+2024-07-28T11:31:20.140Z info: POST /api/authors/store
+2024-07-28T11:31:22.122Z info: GET /api/authors/all
+2024-07-28T11:32:15.531Z info: GET /api/librarians/all
+2024-07-28T11:32:22.276Z info: GET /api/categories/main/all
+2024-07-28T11:32:22.286Z info: GET /api/categories/sub/all
+2024-07-28T11:32:31.808Z info: POST /api/categories/sub/delete/666875878ebb2d36b2577c28
+2024-07-28T11:32:32.805Z info: GET /api/categories/main/all
+2024-07-28T11:32:33.123Z info: GET /api/categories/sub/all
