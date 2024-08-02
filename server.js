@@ -32,7 +32,8 @@ app.use(helmet()); // Security middleware
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:5173',
-  'http://13.215.35.0/',
+  'http://localhost:3000',
+  'http://13.215.35.0',
 ];
 
 const corsOptions = {
