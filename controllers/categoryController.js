@@ -1,6 +1,6 @@
 // controllers\categoryController.js
 const Category = require("../models/categoryModel");
-const CategorySub = require("../models/categorySubModel");
+const SubCategory  = require("../models/categorySubModel");
 
 // category ////////////////////////////////////////////
 exports.storeCategory = async (req, res) => { //storing
@@ -29,9 +29,9 @@ exports.storeCategory = async (req, res) => { //storing
   }
 };
 
-exports.getAllCategories = async (req, res) => { //retrieving all data
+exports.getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.find({ is_active: true });
+    const categories = await Category.find({ is_active: true }).populate('subCategories');
     if (categories.length === 0) {
       return res.status(400).json({
         message: "No categories found"
@@ -152,7 +152,7 @@ exports.deleteCategory = async (req, res) => { //disabling category and relevant
     }
     category.is_active = false;
     await category.save();
-    const subcategories = await CategorySub.find({ parentCategory: categoryId });
+    const subcategories = await SubCategory .find({ parentCategory: categoryId });
     for (const subcategory of subcategories) {
       subcategory.is_active = false;
       await subcategory.save();
@@ -167,31 +167,38 @@ exports.deleteCategory = async (req, res) => { //disabling category and relevant
 };
 
 // sub category ///////////////////////////////////////////////////////
-exports.storeSubCategory = async (req, res) => { //storing data
+exports.storeSubCategory = async (req, res) => {
   try {
     const { name, parentCategory } = req.body;
+    
+    // Check if parent category exists
     const categoryExists = await Category.findById(parentCategory);
     if (!categoryExists) {
       return res.status(400).json({
         message: "Parent category does not exist",
       });
     }
-    const subcategoryExists = await CategorySub.findOne({ name });
+    
+    // Check if subcategory with the same name already exists
+    const subcategoryExists = await SubCategory.findOne({ name });
     if (subcategoryExists) {
       return res.status(400).json({
         message: "Cannot add another subcategory with the same name",
       });
     }
-    const response = await CategorySub.create(req.body);
-    if (response) {
-      return res.status(200).json({
-        message: "Sub Category Created",
-      });
-    } else {
-      return res.status(400).json({
-        message: "Sub Category creation failed.",
-      });
-    }
+    
+    // Create the new subcategory
+    const subCategory = new SubCategory(req.body);
+    await subCategory.save();
+    
+    // Update the parent category to include the new subcategory
+    categoryExists.subCategories.push(subCategory._id);
+    await categoryExists.save();
+    
+    return res.status(200).json({
+      message: "Sub Category Created",
+      subCategory,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -200,9 +207,10 @@ exports.storeSubCategory = async (req, res) => { //storing data
   }
 };
 
+
 exports.getAllSubCategories = async (req, res) => { //retrieving all data
   try {
-    const subCategories = await CategorySub.find({ is_active: true });
+    const subCategories = await SubCategory .find({ is_active: true });
     if (subCategories.length === 0) {
       return res.status(400).json({
         message: "No sub categories found"
@@ -249,7 +257,7 @@ exports.getSearchedSubCategories = async (req, res) => { //retrieving search-fil
     if (category) {
       query.parentCategory = category;
     }
-    const subCategories = await CategorySub.find(query);
+    const subCategories = await SubCategory .find(query);
     if (subCategories.length === 0) {
       return res.status(400).json({
         message: "No sub categories found"
@@ -273,14 +281,14 @@ exports.updateSubCategory = async (req, res) => { //updating sub category
         message: "Sub Category ID not found"
       });
     }
-    const subCategoryExists = await CategorySub.findOne({ name, parentCategory });
+    const subCategoryExists = await SubCategory .findOne({ name, parentCategory });
     const category = await Category.findById(parentCategory);
     if (subCategoryExists && subCategoryExists._id != subCategoryId) {
       return res.status(400).json({
         message: `Sub category already exists for ${category.name} category`
       });
     }
-    const response = await CategorySub.findByIdAndUpdate(subCategoryId, { name, parentCategory }, { new: true });
+    const response = await SubCategory .findByIdAndUpdate(subCategoryId, { name, parentCategory }, { new: true });
     if (!response) {
       return res.status(400).json({
         message: "Sub category not found"
@@ -302,7 +310,7 @@ exports.updateSubCategory = async (req, res) => { //updating sub category
 exports.deleteSubCategory = async (req, res) => { //disabling sub categories
   try {
     const subCategoryId = req.params.id;
-    const subCategory = await CategorySub.findById(subCategoryId);
+    const subCategory = await SubCategory .findById(subCategoryId);
     if (!subCategory) {
       return res.status(404).json({ message: "Sub category not found" });
     }
