@@ -14,6 +14,10 @@ const CategoriesSchema = new Schema({
     type: Boolean,
     default: true
   },
+  subCategories: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'SubCategory' // Make sure this matches the model name
+  }],
   CreatedAt: {
     type: Date,
     default: Date.now,
