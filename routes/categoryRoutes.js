@@ -11,6 +11,7 @@ router.get("/main/:id", categoryController.showCategory);
 router.get("/main/search", categoryController.getSearchedCategories);
 router.post("/main/update/:id", categoryController.updateCategory);
 router.post("/main/delete/:id", categoryController.deleteCategory);
+router.post("/main/change-status/:id", categoryController.changeStatusCategory);
 
 // sub category
 router.post("/sub/store", categoryController.storeSubCategory);
