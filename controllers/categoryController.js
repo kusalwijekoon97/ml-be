@@ -3,25 +3,44 @@ const Category = require("../models/categoryModel");
 const SubCategory  = require("../models/categorySubModel");
 
 // category ////////////////////////////////////////////
-exports.storeCategory = async (req, res) => { //storing
+exports.storeCategory = async (req, res) => {
   try {
-    const { name, library } = req.body;
+    const { name, library, subCategories } = req.body;
+
     const categoryExists = await Category.findOne({ name });
     if (categoryExists) {
       return res.status(400).json({
-        message: "Cannot add another category with same name",
+        message: "Cannot add another category with the same name",
       });
     }
-    const response = await Category.create({ name, library: Array.isArray(library) ? library : [library] });
-    if (response) {
-      return res.status(200).json({
-        message: "Category Created",
+
+    const newCategory = new Category({
+      name,
+      library: Array.isArray(library) ? library : [library],
+      subCategories: [] // Will be filled after creating subcategories
+    });
+
+    const savedCategory = await newCategory.save();
+
+    // Create subcategories and link them to the created category
+    const subCategoryIds = [];
+    for (const subCategory of subCategories) {
+      const newSubCategory = new SubCategory({
+        name: subCategory.name,
+        parentCategory: savedCategory._id,
       });
-    } else {
-      return res.status(400).json({
-        message: "Category Creation failed.",
-      });
+      const savedSubCategory = await newSubCategory.save();
+      subCategoryIds.push(savedSubCategory._id);
     }
+
+    // Update the category with the subcategory references
+    savedCategory.subCategories = subCategoryIds;
+    await savedCategory.save();
+
+    return res.status(200).json({
+      message: "Category and subcategories created successfully",
+    });
+
   } catch (err) {
     res.status(500).json({
       message: err.toString(),
