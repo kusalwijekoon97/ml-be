@@ -24,9 +24,9 @@ exports.storeCategory = async (req, res) => {
 
     // Create subcategories and link them to the created category
     const subCategoryIds = [];
-    for (const subCategory of subCategories) {
+    for (const subCategoryName of subCategories) {
       const newSubCategory = new SubCategory({
-        name: subCategory.name,
+        name: subCategoryName,
         parentCategory: savedCategory._id,
       });
       const savedSubCategory = await newSubCategory.save();
