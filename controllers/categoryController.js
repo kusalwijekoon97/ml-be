@@ -126,21 +126,13 @@ exports.getSearchedCategories = async (req, res) => { //retrieving search-filter
     });
   }
 };
+
 exports.updateCategory = async (req, res) => {
   try {
-    const categoryId = req.params.id;
+    const categoryId  = req.params.id;
     const { name, library, subCategories } = req.body;
 
-    if (!categoryId) {
-      return res.status(400).json({ message: "Category ID not found" });
-    }
-
-    // Validate the category data
-    if (!name || !Array.isArray(library)) {
-      return res.status(400).json({ message: "Invalid category data" });
-    }
-
-    // Update the category
+    // Update the main category
     const updatedCategory = await Category.findByIdAndUpdate(
       categoryId,
       { name, library },
@@ -151,54 +143,57 @@ exports.updateCategory = async (req, res) => {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    // Update or create subcategories
     if (Array.isArray(subCategories)) {
       const existingSubCategories = await SubCategory.find({ parentCategory: categoryId });
 
       // Delete subcategories that are not in the updated list
-      for (const subCategory of existingSubCategories) {
-        if (!subCategories.some(sc => sc._id && sc._id.toString() === subCategory._id.toString())) {
-          await SubCategory.findByIdAndDelete(subCategory._id);
-        }
-      }
+      await Promise.all(
+        existingSubCategories.map(async (subCategory) => {
+          if (!subCategories.some(sc => sc._id && sc._id.toString() === subCategory._id.toString())) {
+            await SubCategory.findByIdAndDelete(subCategory._id);
+          }
+        })
+      );
 
       // Update existing subcategories and create new ones
-      const subCategoryIds = [];
-      for (const subCategory of subCategories) {
-        if (!subCategory.name) {
-          return res.status(400).json({ message: "Subcategory name is required" });
-        }
+      const subCategoryIds = await Promise.all(
+        subCategories.map(async (subCategory) => {
+          if (!subCategory.name) {
+            throw new Error("Subcategory name is required");
+          }
 
-        if (subCategory._id) {
-          // Update existing subcategory
-          const updatedSubCategory = await SubCategory.findByIdAndUpdate(
-            subCategory._id,
-            { name: subCategory.name },
-            { new: true }
-          );
-          if (updatedSubCategory) subCategoryIds.push(updatedSubCategory._id);
-        } else {
-          // Create new subcategory
-          const newSubCategory = new SubCategory({
-            name: subCategory.name,
-            parentCategory: categoryId
-          });
-          const savedSubCategory = await newSubCategory.save();
-          subCategoryIds.push(savedSubCategory._id);
-        }
-      }
+          if (subCategory._id) {
+            // Update existing subcategory
+            const updatedSubCategory = await SubCategory.findByIdAndUpdate(
+              subCategory._id,
+              { name: subCategory.name },
+              { new: true }
+            );
+            return updatedSubCategory._id;
+          } else {
+            // Create new subcategory
+            const newSubCategory = new SubCategory({
+              name: subCategory.name,
+              parentCategory: categoryId
+            });
+            const savedSubCategory = await newSubCategory.save();
+            return savedSubCategory._id;
+          }
+        })
+      );
 
       // Update the category with the subcategory references
       updatedCategory.subCategories = subCategoryIds;
       await updatedCategory.save();
     }
 
-    return res.status(200).json({ message: "Category updated successfully" });
+    return res.status(200).json({ message: "Category updated successfully", updatedCategory });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error updating category:", error); // Log the error
+    return res.status(500).json({ message: "Internal Server Error", error: error.message }); // Return error message
   }
 };
+
 
 
 exports.deleteCategory = async (req, res) => {
