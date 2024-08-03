@@ -7,6 +7,7 @@ exports.storeCategory = async (req, res) => {
   try {
     const { name, library, subCategories } = req.body;
 
+    // Check if a category with the same name already exists
     const categoryExists = await Category.findOne({ name });
     if (categoryExists) {
       return res.status(400).json({
@@ -14,19 +15,21 @@ exports.storeCategory = async (req, res) => {
       });
     }
 
+    // Create a new category
     const newCategory = new Category({
       name,
       library: Array.isArray(library) ? library : [library],
       subCategories: [] // Will be filled after creating subcategories
     });
 
+    // Save the category to the database
     const savedCategory = await newCategory.save();
 
     // Create subcategories and link them to the created category
     const subCategoryIds = [];
-    for (const subCategory of subCategories) {
+    for (const subCategoryName of subCategories) {
       const newSubCategory = new SubCategory({
-        name: subCategory.name,
+        name: subCategoryName,
         parentCategory: savedCategory._id,
       });
       const savedSubCategory = await newSubCategory.save();
@@ -37,16 +40,19 @@ exports.storeCategory = async (req, res) => {
     savedCategory.subCategories = subCategoryIds;
     await savedCategory.save();
 
+    // Send a success response
     return res.status(200).json({
       message: "Category and subcategories created successfully",
     });
 
   } catch (err) {
+    // Send an error response
     res.status(500).json({
       message: err.toString(),
     });
   }
 };
+
 
 exports.getAllCategories = async (req, res) => {
   try {
