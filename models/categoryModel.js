@@ -16,7 +16,7 @@ const CategoriesSchema = new Schema({
   },
   subCategories: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'SubCategory' // Make sure this matches the model name
+    ref: 'SubCategory'
   }],
   CreatedAt: {
     type: Date,

@@ -8,7 +8,7 @@ const SubCategoriesSchema = new Schema({
   },
   parentCategory: {
     type: Schema.Types.ObjectId,
-    ref: 'Category', // Make sure this matches the model name
+    ref: 'Category', 
     required: true,
   },
   is_active: {
