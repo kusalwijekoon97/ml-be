@@ -11,7 +11,12 @@ exports.storeCategory = async (req, res) => {
     const categoryExists = await Category.findOne({ name });
     if (categoryExists) {
       return res.status(400).json({
+        success: false,
         message: "Cannot add another category with the same name",
+        error: {
+          code: "CATEGORY_EXISTS",
+          details: `A category with the name '${name}' already exists.`,
+        },
       });
     }
 
@@ -27,6 +32,7 @@ exports.storeCategory = async (req, res) => {
 
     // Create subcategories and link them to the created category
     const subCategoryIds = [];
+    const subCategoryData = [];
     for (const subCategoryName of subCategories) {
       const newSubCategory = new SubCategory({
         name: subCategoryName,
@@ -34,6 +40,12 @@ exports.storeCategory = async (req, res) => {
       });
       const savedSubCategory = await newSubCategory.save();
       subCategoryIds.push(savedSubCategory._id);
+      subCategoryData.push({
+        id: savedSubCategory._id,
+        name: savedSubCategory.name,
+        parentCategory: savedSubCategory.parentCategory,
+        createdAt: savedSubCategory.createdAt,
+      });
     }
 
     // Update the category with the subcategory references
@@ -41,14 +53,29 @@ exports.storeCategory = async (req, res) => {
     await savedCategory.save();
 
     // Send a success response
-    return res.status(200).json({
+    return res.status(201).json({
+      success: true,
       message: "Category and subcategories created successfully",
+      data: {
+        category: {
+          id: savedCategory._id,
+          name: savedCategory.name,
+          library: savedCategory.library,
+          subCategories: subCategoryData,
+          createdAt: savedCategory.createdAt,
+        }
+      }
     });
 
   } catch (err) {
     // Send an error response
-    res.status(500).json({
-      message: err.toString(),
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while creating the category and subcategories",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
     });
   }
 };
@@ -57,25 +84,44 @@ exports.storeCategory = async (req, res) => {
 exports.getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find({ is_active: true }).populate('subCategories');
+
     if (categories.length === 0) {
-      return res.status(400).json({
-        message: "No categories found"
+      return res.status(404).json({
+        success: false,
+        message: "No categories found",
+        data: [],
       });
     }
-    return res.status(200).json(categories);
+
+    return res.status(200).json({
+      success: true,
+      message: "Categories retrieved successfully",
+      data: categories,
+    });
   } catch (err) {
-    res.status(500).json({
-      message: err.toString(),
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while retrieving categories",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
     });
   }
 };
 
-exports.getSingleCategory = async (req, res) => { // Get a single category with subcategories
+exports.getSingleCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
+
     if (!categoryId) {
       return res.status(400).json({
-        message: "Category ID not provided"
+        success: false,
+        message: "Category ID not provided",
+        error: {
+          code: "CATEGORY_ID_MISSING",
+          details: "A valid category ID must be provided in the request parameters.",
+        },
       });
     }
 
@@ -83,24 +129,39 @@ exports.getSingleCategory = async (req, res) => { // Get a single category with 
     const category = await Category.findById(categoryId)
       .populate({
         path: 'subCategories',
-        select: 'name is_active CreatedAt', // Select only the fields you need
-        match: { is_active: true } // Optional: filter to include only active subcategories
+        select: 'name is_active createdAt', // Select only the fields you need
+        match: { is_active: true }, // Optional: filter to include only active subcategories
       });
 
     if (!category) {
       return res.status(404).json({
-        message: "Category not found"
+        success: false,
+        message: "Category not found",
+        error: {
+          code: "CATEGORY_NOT_FOUND",
+          details: `No category found with the ID ${categoryId}.`,
+        },
       });
     }
 
-    return res.status(200).json(category);
+    return res.status(200).json({
+      success: true,
+      message: "Category retrieved successfully",
+      data: category,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      message: "Internal Server Error"
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: error.message,
+      },
     });
   }
 };
+
 
 exports.getSearchedCategories = async (req, res) => { //retrieving search-filtered data by name or library
   try {
@@ -126,11 +187,22 @@ exports.getSearchedCategories = async (req, res) => { //retrieving search-filter
     });
   }
 };
-
 exports.updateCategory = async (req, res) => {
   try {
-    const categoryId  = req.params.id;
+    const categoryId = req.params.id;
     const { name, library, subCategories } = req.body;
+
+    // Validate that the category ID is provided
+    if (!categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Category ID is required",
+        error: {
+          code: "CATEGORY_ID_MISSING",
+          details: "A valid category ID must be provided in the request parameters.",
+        },
+      });
+    }
 
     // Update the main category
     const updatedCategory = await Category.findByIdAndUpdate(
@@ -140,7 +212,14 @@ exports.updateCategory = async (req, res) => {
     );
 
     if (!updatedCategory) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+        error: {
+          code: "CATEGORY_NOT_FOUND",
+          details: `No category found with the ID ${categoryId}.`,
+        },
+      });
     }
 
     if (Array.isArray(subCategories)) {
@@ -174,7 +253,7 @@ exports.updateCategory = async (req, res) => {
             // Create new subcategory
             const newSubCategory = new SubCategory({
               name: subCategory.name,
-              parentCategory: categoryId
+              parentCategory: categoryId,
             });
             const savedSubCategory = await newSubCategory.save();
             return savedSubCategory._id;
@@ -187,10 +266,21 @@ exports.updateCategory = async (req, res) => {
       await updatedCategory.save();
     }
 
-    return res.status(200).json({ message: "Category updated successfully", updatedCategory });
+    return res.status(200).json({
+      success: true,
+      message: "Category updated successfully",
+      data: updatedCategory,
+    });
   } catch (error) {
-    console.error("Error updating category:", error); // Log the error
-    return res.status(500).json({ message: "Internal Server Error", error: error.message }); // Return error message
+    console.error("Error updating category:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: error.message,
+      },
+    });
   }
 };
 
@@ -200,10 +290,29 @@ exports.deleteCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
 
+    // Validate that the category ID is provided
+    if (!categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Category ID is required",
+        error: {
+          code: "CATEGORY_ID_MISSING",
+          details: "A valid category ID must be provided in the request parameters.",
+        },
+      });
+    }
+
     // Find the category to delete
     const category = await Category.findById(categoryId);
     if (!category) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+        error: {
+          code: "CATEGORY_NOT_FOUND",
+          details: `No category found with the ID ${categoryId}.`,
+        },
+      });
     }
 
     // Find and delete all subcategories related to the category
@@ -212,10 +321,20 @@ exports.deleteCategory = async (req, res) => {
     // Delete the category itself
     await Category.findByIdAndDelete(categoryId);
 
-    return res.status(200).json({ message: "Category and its subcategories deleted successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "Category and its subcategories deleted successfully",
+    });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error deleting category:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: error.message,
+      },
+    });
   }
 };
 
@@ -224,10 +343,29 @@ exports.changeStatusCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
 
+    // Validate that the category ID is provided
+    if (!categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Category ID is required",
+        error: {
+          code: "CATEGORY_ID_MISSING",
+          details: "A valid category ID must be provided in the request parameters.",
+        },
+      });
+    }
+
     // Find the category by ID
     const category = await Category.findById(categoryId);
     if (!category) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+        error: {
+          code: "CATEGORY_NOT_FOUND",
+          details: `No category found with the ID ${categoryId}.`,
+        },
+      });
     }
 
     // Toggle the is_active status
@@ -241,9 +379,24 @@ exports.changeStatusCategory = async (req, res) => {
       await subcategory.save();
     }
 
-    return res.status(200).json({ message: "Category status changed successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "Category status changed successfully",
+      data: {
+        categoryId: category._id,
+        is_active: category.is_active,
+        subCategoriesUpdated: subcategories.length,
+      },
+    });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error changing category status:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: error.message,
+      },
+    });
   }
 };
