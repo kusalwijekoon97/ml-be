@@ -23,3 +23,4 @@ router.post("/sub/delete/:id", categoryController.deleteSubCategory);
 
 module.exports = router;
 
+
