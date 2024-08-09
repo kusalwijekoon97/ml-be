@@ -50,6 +50,10 @@ const authorSchema = new Schema({
     required: true,
     default: false,
   },
+  is_active: {
+    type: Boolean,
+    default: true
+  },
 },
   { timestamps: true },
 );
