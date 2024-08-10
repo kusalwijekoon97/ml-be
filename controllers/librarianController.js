@@ -10,7 +10,7 @@ const randomCode = () => {
 exports.storeLibrarian = async (req, res) => {
   try {
     const { email, phone, firstName, lastName, nic, address } = req.body;
-    
+
     // Ensure email and phone are provided
     if (!email || !phone || !firstName || !lastName || !nic) {
       return res.status(400).json({
@@ -88,12 +88,18 @@ exports.storeLibrarian = async (req, res) => {
 
 exports.getAllLibrarians = async (req, res) => {
   try {
-    // Retrieve all librarians, sorted by firstName
-    const librarians = await Librarian.find()
-      .sort({ firstName: 1 }) // Sort by firstName in ascending order
-      .select("-password -otpCode -emailCode -passwordRecoveryToken"); // Exclude sensitive fields
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-    // Check if any librarians were found
+    const librarians = await Librarian.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ firstName: 1 })
+      .select("-password -otpCode -emailCode -passwordRecoveryToken");
+
+    const totalItems = await Librarian.countDocuments();
+
     if (librarians.length === 0) {
       return res.status(404).json({
         success: false,
@@ -108,6 +114,9 @@ exports.getAllLibrarians = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: librarians,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+      currentPage: page,
     });
   } catch (err) {
     console.error("Error retrieving librarians:", err);
