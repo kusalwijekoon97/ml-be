@@ -54,8 +54,30 @@ exports.storeAuthor = async (req, res) => {
 
 exports.getAllAuthors = async (req, res) => {
   try {
-    // Retrieve all authors who are not marked as deleted
-    const authors = await Author.find({ deleted: false }).sort({ firstname: 1 });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.search ? req.query.search.trim() : '';
+
+    const query = {
+      deleted: false,
+      ...(
+        search && {
+          $or: [
+            { firstname: { $regex: search, $options: 'i' } },
+            { lastname: { $regex: search, $options: 'i' } },
+            { penName: { $regex: search, $options: 'i' } },
+          ],
+        }
+      ),
+    };
+
+    const authors = await Author.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ firstName: 1 });
+
+    const totalItems = await Author.countDocuments(query);
 
     // Generate a signed URL for each author's profile image
     for (const author of authors) {
@@ -88,6 +110,9 @@ exports.getAllAuthors = async (req, res) => {
       success: true,
       message: "Authors retrieved successfully",
       data: authors,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+      currentPage: page,
     });
   } catch (err) {
     console.error("Error retrieving authors:", err);
