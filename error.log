@@ -1,6 +1,0 @@
-2024-07-13T08:46:52.584Z error: MongooseServerSelectionError: Server selection timed out after 30000 ms
-    at _handleConnectionErrors (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen - my library\Shengen- MyLibrary - 19_05_2024\backend\ml-be\node_modules\mongoose\lib\connection.js:896:11)
-    at NativeConnection.openUri (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen - my library\Shengen- MyLibrary - 19_05_2024\backend\ml-be\node_modules\mongoose\lib\connection.js:847:11)
-2024-07-13T09:42:15.644Z error: MongooseServerSelectionError: Server selection timed out after 30000 ms
-    at _handleConnectionErrors (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen - my library\Shengen- MyLibrary - 19_05_2024\backend\ml-be\node_modules\mongoose\lib\connection.js:896:11)
-    at NativeConnection.openUri (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen - my library\Shengen- MyLibrary - 19_05_2024\backend\ml-be\node_modules\mongoose\lib\connection.js:847:11)
