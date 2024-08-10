@@ -9,7 +9,7 @@ router.get("/all", librarianController.getAllLibrarians);
 router.get("/all-by-library", librarianController.getLibrariansByLibrary);
 router.get("/:id", librarianController.showLibrarian);
 router.post("/update/:id", librarianController.updateLibrarian);
-router.get("/toggle-status/:id", librarianController.changeStatus);
+router.post("/change-status/:id", librarianController.changeStatus);
 router.post("/delete/:id", librarianController.deleteLibrarian);
 // router.post("/update-plan", librarianController.updatePlan);
 router.post("/search", librarianController.searchLibrarians);

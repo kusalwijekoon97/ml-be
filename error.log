@@ -4,3 +4,9 @@
 2024-07-13T09:42:15.644Z error: MongooseServerSelectionError: Server selection timed out after 30000 ms
     at _handleConnectionErrors (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen - my library\Shengen- MyLibrary - 19_05_2024\backend\ml-be\node_modules\mongoose\lib\connection.js:896:11)
     at NativeConnection.openUri (C:\Users\KW\Documents\Projects\Freelance\in-progress\Shengen - my library\Shengen- MyLibrary - 19_05_2024\backend\ml-be\node_modules\mongoose\lib\connection.js:847:11)
+2024-08-10T00:31:01.937Z error: Error: querySrv ECONNREFUSED _mongodb._tcp.cluster0.k2k69pk.mongodb.net
+    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/promises:275:17)
+2024-08-10T00:31:16.194Z error: Error: querySrv ECONNREFUSED _mongodb._tcp.cluster0.k2k69pk.mongodb.net
+    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/promises:275:17)
+2024-08-10T00:32:55.750Z error: Error: querySrv ECONNREFUSED _mongodb._tcp.cluster0.k2k69pk.mongodb.net
+    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/promises:275:17)
