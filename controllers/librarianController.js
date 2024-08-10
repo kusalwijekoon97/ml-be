@@ -91,8 +91,21 @@ exports.getAllLibrarians = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+    const search = req.query.search ? req.query.search.trim() : '';
 
-    const librarians = await Librarian.find()
+    const query = search
+      ? {
+        $or: [
+          { firstName: { $regex: search, $options: 'i' } },
+          { lastName: { $regex: search, $options: 'i' } },
+          { nic: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+          { phone: { $regex: search, $options: 'i' } },
+        ],
+      }
+      : {};
+
+    const librarians = await Librarian.find(query)
       .skip(skip)
       .limit(limit)
       .sort({ firstName: 1 })
