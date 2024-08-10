@@ -6,27 +6,32 @@ const librarianSchema = new Schema({
   firstName: String,
   lastName: String,
   nic: String,
+  email: {
+    type: String,
+    required: true,
+    unique:true
+  },
   address: String,
   phone: {
     type: String,
     required: true,
+    unique:true
   },
   status: {
     type: Boolean,
     default: true,
   },
-  type: String, //librarian,admin
+  type: {
+    type: String,
+    default: "librarian",
+  },
   libraries: [
     {
       type: Schema.Types.ObjectId,
       ref: "library",
     },
   ],
-  restrictions: Array, // we'll save rules as string and match on front end
-  email: {
-    type: String,
-    required: true,
-  },
+  restrictions: Array,
   password: {
     type: String,
     required: true,
@@ -59,9 +64,14 @@ const librarianSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  is_active: {
+  deleted: {
     type: Boolean,
     required: true,
+    default: false,
+  },
+  is_active: {
+    type: Boolean,
+    default: true,
   },
 });
 
