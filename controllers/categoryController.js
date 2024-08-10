@@ -83,7 +83,25 @@ exports.storeCategory = async (req, res) => {
 
 exports.getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.find({ is_active: true }).populate('subCategories');
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.search ? req.query.search.trim() : '';
+
+    const query = search
+      ? {
+        $or: [
+          { name: { $regex: search, $options: 'i' } }
+        ],
+      }
+      : {};
+
+    const categories = await Category.find(query)
+      .populate('subCategories')
+      .skip(skip)
+      .limit(limit);
+
+    const totalItems = await Category.countDocuments();
 
     if (categories.length === 0) {
       return res.status(404).json({
@@ -97,6 +115,9 @@ exports.getAllCategories = async (req, res) => {
       success: true,
       message: "Categories retrieved successfully",
       data: categories,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+      currentPage: page,
     });
   } catch (err) {
     return res.status(500).json({
@@ -109,6 +130,7 @@ exports.getAllCategories = async (req, res) => {
     });
   }
 };
+
 
 exports.getSingleCategory = async (req, res) => {
   try {
