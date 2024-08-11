@@ -129,7 +129,11 @@ exports.showLibrary = async (req, res) => {
     }
 
     // Find the library by ID
-    const library = await Library.findById(libraryId);
+    const library = await Library.findById(libraryId)
+    .populate({
+      path: 'librarian',
+      select: '_id firstName lastName',
+    });
     if (!library) {
       return res.status(404).json({
         success: false,
@@ -201,18 +205,108 @@ exports.updateLibrary = async (req, res) => {
 exports.deleteLibrary = async (req, res) => {
   try {
     const libraryId = req.params.id;
+
+    // Validate that the library ID is provided
+    if (!libraryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Library ID not provided",
+        error: {
+          code: "LIBRARY_ID_MISSING",
+          details: "A valid library ID must be provided in the request parameters.",
+        },
+      });
+    }
+
+    // Find the library by ID
     const library = await Library.findById(libraryId);
     if (!library) {
-      return res.status(404).json({ message: "Library not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Library not found",
+        error: {
+          code: "LIBRARY_NOT_FOUND",
+          details: `No library found with the ID ${libraryId}.`,
+        },
+      });
     }
-    library.is_active = false;
+
+    // Mark the library as deleted
+    library.deleted = true;
     await library.save();
-    return res.status(200).json({ message: "Library deleted" });
+
+    return res.status(200).json({
+      success: true,
+      message: "Library deleted successfully",
+    });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error deleting library:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: error.message,
+      },
+    });
   }
 };
+
+
+exports.changeStatus = async (req, res) => {
+  try {
+    const libraryId = req.params.id;
+
+    // Validate that the library ID is provided
+    if (!libraryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Library ID is required",
+        error: {
+          code: "LIBRARY_ID_MISSING",
+          details: "A valid library ID must be provided in the request parameters.",
+        },
+      });
+    }
+
+    // Find the library by ID
+    const library = await Library.findById(libraryId);
+    if (!library) {
+      return res.status(404).json({
+        success: false,
+        message: "Library not found",
+        error: {
+          code: "LIBRARY_NOT_FOUND",
+          details: `No library found with the ID ${libraryId}.`,
+        },
+      });
+    }
+
+    // Toggle the is_active status
+    library.is_active = !library.is_active;
+    await library.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Library status changed successfully",
+      data: {
+        libraryId: library._id,
+        is_active: library.is_active,
+      },
+    });
+  } catch (error) {
+    console.error("Error changing library status:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: error.message,
+      },
+    });
+  }
+};
+
 
 // open --------------------------------------------------------------------
 
