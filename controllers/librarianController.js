@@ -511,3 +511,42 @@ exports.searchLibrarians = async (req, res) => {
     });
   }
 };
+
+
+
+// all -open
+exports.getOpenAllLibrarians = async (req, res) => {
+  try {
+
+    const librarians = await Librarian.find({deleted:false})
+      .sort({ firstName: 1 })
+      .select("-password -otpCode -emailCode -passwordRecoveryToken");
+
+
+    if (librarians.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No librarians found",
+        error: {
+          code: "NO_LIBRARIANS_FOUND",
+          details: "There are currently no librarians available in the database.",
+        },
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: librarians
+    });
+  } catch (err) {
+    console.error("Error retrieving librarians:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
