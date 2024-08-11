@@ -1,4 +1,5 @@
 // controllers/libraryController.js
+const Librarian = require("../models/librarianModel");
 const Library = require("../models/libraryModel");
 
 exports.storeLibrary = async (req, res) => {
@@ -167,39 +168,81 @@ exports.showLibrary = async (req, res) => {
 exports.updateLibrary = async (req, res) => {
   try {
     const libraryId = req.params.id;
-    const { name } = req.body;
+    const { name, librarian } = req.body;
+
+    // Check if the library ID is provided
     if (!libraryId) {
       return res.status(400).json({
+        success: false,
         message: "Library ID not found",
+        error: {
+          code: "LIBRARY_ID_NOT_FOUND",
+          details: "Please provide a valid library ID."
+        },
       });
     }
+
+    // Check if a library with the same name already exists (excluding the current one)
     const libraryExists = await Library.findOne({ name });
-    if (libraryExists && libraryExists._id != libraryId) {
+    if (libraryExists && libraryExists._id.toString() !== libraryId) {
       return res.status(400).json({
-        message: "Library name already exists",
+        success: false,
+        message: "Cannot rename the library to this name",
+        error: {
+          code: "LIBRARY_NAME_EXISTS",
+          details: `A library with the name '${name}' already exists.`,
+        },
       });
     }
-    const response = await Library.findByIdAndUpdate(
+
+    // Update the library
+    const updatedLibrary = await Library.findByIdAndUpdate(
       libraryId,
-      { name },
+      { name, librarian },
       { new: true }
     );
-    if (!response) {
-      return res.status(400).json({
+
+    // If the library was not found
+    if (!updatedLibrary) {
+      return res.status(404).json({
+        success: false,
         message: "Library not found",
+        error: {
+          code: "LIBRARY_NOT_FOUND",
+          details: "The library with the specified ID does not exist."
+        },
       });
     }
+
+    // Update the librarian to have this library (if applicable)
+    if (librarian) {
+      const librarianDoc = await Librarian.findById(librarian);
+      if (librarianDoc) {
+        if (!librarianDoc.libraries.includes(libraryId)) {
+          librarianDoc.libraries.push(libraryId);
+          await librarianDoc.save();
+        }
+      }
+    }
+
     return res.status(200).json({
-      message: "Library updated",
-      library: response
+      success: true,
+      message: "Library updated successfully",
+      library: updatedLibrary,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error updating library:", error);
     return res.status(500).json({
+      success: false,
       message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: error.message,
+      },
     });
   }
 };
+
 
 
 exports.deleteLibrary = async (req, res) => {
