@@ -116,8 +116,6 @@ exports.storeLibrarian = async (req, res) => {
   }
 };
 
-
-
 exports.getAllLibrarians = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
