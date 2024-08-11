@@ -209,6 +209,8 @@ exports.getSearchedCategories = async (req, res) => { //retrieving search-filter
     });
   }
 };
+
+
 exports.updateCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
@@ -305,7 +307,6 @@ exports.updateCategory = async (req, res) => {
     });
   }
 };
-
 
 
 exports.deleteCategory = async (req, res) => {

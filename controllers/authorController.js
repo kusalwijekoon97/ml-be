@@ -52,6 +52,7 @@ exports.storeAuthor = async (req, res) => {
   }
 };
 
+
 exports.getAllAuthors = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -127,6 +128,7 @@ exports.getAllAuthors = async (req, res) => {
   }
 };
 
+
 exports.showAuthor = async (req, res) => {
   try {
     const authorId = req.params.id;
@@ -172,6 +174,7 @@ exports.showAuthor = async (req, res) => {
     });
   }
 };
+
 
 exports.deleteAuthor = async (req, res) => {
   try {
@@ -220,6 +223,7 @@ exports.deleteAuthor = async (req, res) => {
     });
   }
 };
+
 
 exports.updateAuthor = async (req, res) => {
   try {
@@ -280,6 +284,7 @@ exports.updateAuthor = async (req, res) => {
     });
   }
 };
+
 
 exports.changeStatusAuthor = async (req, res) => {
   try {

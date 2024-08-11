@@ -10,6 +10,7 @@ const generateRandomCode = () => {
   return Math.random().toString(36).substr(2, 8).toUpperCase();
 };
 
+
 exports.storeLibrarian = async (req, res) => {
   try {
     const { email, phone, firstName, lastName, nic, address } = req.body;
@@ -116,6 +117,7 @@ exports.storeLibrarian = async (req, res) => {
   }
 };
 
+
 exports.getAllLibrarians = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -175,7 +177,6 @@ exports.getAllLibrarians = async (req, res) => {
 };
 
 
-
 exports.getLibrariansByLibrary = async (req, res) => {
   try {
     Librarian.find({ libraries: { $in: req.body.libraries }, firstName: 1 })
@@ -191,6 +192,8 @@ exports.getLibrariansByLibrary = async (req, res) => {
     });
   }
 };
+
+
 exports.showLibrarian = async (req, res) => {
   try {
     const librarianId = req.params.id;
@@ -228,6 +231,8 @@ exports.showLibrarian = async (req, res) => {
     });
   }
 };
+
+
 exports.deleteLibrarian = async (req, res) => {
   try {
     const librarianId = req.params.id;
@@ -265,6 +270,7 @@ exports.deleteLibrarian = async (req, res) => {
     });
   }
 };
+
 
 exports.updateLibrarian = async (req, res) => {
   try {
@@ -354,7 +360,6 @@ exports.updateLibrarian = async (req, res) => {
     });
   }
 };
-
 
 
 exports.changeStatus = async (req, res) => {
@@ -465,6 +470,7 @@ exports.changeStatus = async (req, res) => {
 //     res.status(500).json(err);
 //   }
 // };
+
 
 exports.searchLibrarians = async (req, res) => {
   try {

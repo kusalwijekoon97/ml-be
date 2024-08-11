@@ -49,6 +49,7 @@ exports.storeLibrary = async (req, res) => {
   }
 };
 
+
 exports.getAllLibraries = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -108,6 +109,7 @@ exports.getAllLibraries = async (req, res) => {
     });
   }
 };
+
 
 exports.showLibrary = async (req, res) => {
   try {
@@ -193,6 +195,7 @@ exports.updateLibrary = async (req, res) => {
     });
   }
 };
+
 
 exports.deleteLibrary = async (req, res) => {
   try {
