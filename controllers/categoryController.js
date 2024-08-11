@@ -97,6 +97,7 @@ exports.getAllCategories = async (req, res) => {
       : {};
 
     const categories = await Category.find(query)
+      .populate('library')
       .populate('subCategories')
       .skip(skip)
       .limit(limit);
@@ -153,6 +154,9 @@ exports.getSingleCategory = async (req, res) => {
         path: 'subCategories',
         select: 'name is_active createdAt', // Select only the fields you need
         match: { is_active: true }, // Optional: filter to include only active subcategories
+      }).populate({
+        path: 'library',
+        select: '_id name',
       });
 
     if (!category) {

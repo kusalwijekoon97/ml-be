@@ -6,10 +6,10 @@ const CategoriesSchema = new Schema({
     type: String,
     required: true
   },
-  library: {
-    type: [String],
-    required: true
-  },
+  library: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Library'
+  }],
   is_active: {
     type: Boolean,
     default: true
