@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post("/store", libraryController.storeLibrary);
 router.get("/all", libraryController.getAllLibraries);
+router.get("/all-open", libraryController.getOpenAllLibraries);
 router.get("/:id", libraryController.showLibrary);
 router.post("/update/:id", libraryController.updateLibrary);
 router.post("/delete/:id", libraryController.deleteLibrary);

@@ -212,3 +212,43 @@ exports.deleteLibrary = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// open --------------------------------------------------------------------
+
+exports.getOpenAllLibraries = async (req, res) => {
+  try {
+
+    // Fetch active libraries, sorted by name in ascending order
+    const libraries = await Library.find({deleted:false})
+    .sort({ name: 1 });
+
+    // Check if no libraries were found
+    if (libraries.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No libraries found",
+        error: {
+          code: "LIBRARIES_NOT_FOUND",
+          details: "No active libraries are available in the system.",
+        },
+      });
+    }
+
+    // Return the list of libraries
+    return res.status(200).json({
+      success: true,
+      message: "Libraries retrieved successfully",
+      data: libraries
+    });
+  } catch (err) {
+    console.error("Error retrieving libraries:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
