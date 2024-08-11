@@ -1,9 +1,12 @@
 // controllers\librarianController.js
+const fs = require("fs");
+const path = require("path");
 const Librarian = require("../models/librarianModel");
 const bcrypt = require("bcryptjs");
+const emailTransporter = require("../utils/emailTransporter"); 
+require('dotenv').config();
 
-
-const randomCode = () => {
+const generateRandomCode = () => {
   return Math.random().toString(36).substr(2, 8).toUpperCase();
 };
 
@@ -51,8 +54,12 @@ exports.storeLibrarian = async (req, res) => {
       });
     }
 
-    // Create new librarian
-    const defaultPassword = "11111111";
+    const rndmPassword = generateRandomCode();
+    // console.log(rndmPassword);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(rndmPassword, saltRounds);
+
+    // Create new librarian with hashed password
     const newLibrarian = new Librarian({
       firstName,
       lastName,
@@ -60,11 +67,36 @@ exports.storeLibrarian = async (req, res) => {
       email: lowerCaseEmail,
       address,
       phone,
-      password: defaultPassword,
+      password: hashedPassword,
       libraries: null,
     });
 
     await newLibrarian.save();
+
+    // Load the HTML email template
+    const templatePath = path.join(__dirname, '../src/emails/create_librarian.html');
+    let emailHtml = fs.readFileSync(templatePath, 'utf8');
+    // Replace placeholders with actual data
+    emailHtml = emailHtml.replace('{{firstName}}', firstName)
+                         .replace('{{lastName}}', lastName)
+                         .replace('{{email}}', lowerCaseEmail)
+                         .replace('{{password}}', rndmPassword);
+
+    // Send email with librarian data and password
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      to: lowerCaseEmail,
+      subject: 'Welcome to My Library',
+      html: emailHtml 
+    };
+
+    emailTransporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
 
     return res.status(201).json({
       success: true,
