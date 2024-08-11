@@ -4,6 +4,7 @@ const path = require("path");
 const Librarian = require("../models/librarianModel");
 const bcrypt = require("bcryptjs");
 const emailTransporter = require("../utils/emailTransporter"); 
+const { log } = require("console");
 require('dotenv').config();
 
 const generateRandomCode = () => {
@@ -13,7 +14,9 @@ const generateRandomCode = () => {
 
 exports.storeLibrarian = async (req, res) => {
   try {
-    const { email, phone, firstName, lastName, nic, address } = req.body;
+    const { email, phone, firstName, lastName, nic, address, library } = req.body;
+
+    console.log(req.body);
 
     // Ensure email and phone are provided
     if (!email || !phone || !firstName || !lastName || !nic) {
@@ -69,9 +72,8 @@ exports.storeLibrarian = async (req, res) => {
       address,
       phone,
       password: hashedPassword,
-      libraries: null,
+      libraries: library
     });
-
     await newLibrarian.save();
 
     // Load the HTML email template
