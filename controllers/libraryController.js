@@ -70,6 +70,7 @@ exports.getAllLibraries = async (req, res) => {
 
     // Fetch active libraries, sorted by name in ascending order
     const libraries = await Library.find(query)
+    .populate('librarian')
     .skip(skip)
     .limit(limit)
     .sort({ name: 1 });

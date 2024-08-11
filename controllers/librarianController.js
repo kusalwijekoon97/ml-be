@@ -5,6 +5,7 @@ const Librarian = require("../models/librarianModel");
 const bcrypt = require("bcryptjs");
 const emailTransporter = require("../utils/emailTransporter"); 
 const { log } = require("console");
+const Library = require("../models/libraryModel");
 require('dotenv').config();
 
 const generateRandomCode = () => {
@@ -75,6 +76,21 @@ exports.storeLibrarian = async (req, res) => {
       libraries: library
     });
     await newLibrarian.save();
+
+     // Update existing libraries with the new librarian
+     if (library && library.length > 0) {
+      // Update all libraries assigned to the new librarian
+      await Library.updateMany(
+        { _id: { $in: library } },
+        { $set: { librarian: newLibrarian._id } }
+      );
+      // Optionally, clear the librarian field in other libraries if needed
+      // This step is optional based on your requirements
+      await Library.updateMany(
+        { librarian: newLibrarian._id, _id: { $nin: library } },
+        { $set: { librarian: null } }
+      );
+    }
 
     // Load the HTML email template
     const templatePath = path.join(__dirname, '../src/emails/create_librarian.html');
