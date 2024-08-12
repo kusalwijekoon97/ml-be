@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const Librarian = require("../models/librarianModel");
 const bcrypt = require("bcryptjs");
-const emailTransporter = require("../utils/emailTransporter"); 
+const emailTransporter = require("../utils/emailTransporter");
 const { log } = require("console");
 const Library = require("../models/libraryModel");
 require('dotenv').config();
@@ -77,8 +77,8 @@ exports.storeLibrarian = async (req, res) => {
     });
     await newLibrarian.save();
 
-     // Update existing libraries with the new librarian
-     if (library && library.length > 0) {
+    // Update existing libraries with the new librarian
+    if (library && library.length > 0) {
       // Update all libraries assigned to the new librarian
       await Library.updateMany(
         { _id: { $in: library } },
@@ -97,16 +97,16 @@ exports.storeLibrarian = async (req, res) => {
     let emailHtml = fs.readFileSync(templatePath, 'utf8');
     // Replace placeholders with actual data
     emailHtml = emailHtml.replace('{{firstName}}', firstName)
-                         .replace('{{lastName}}', lastName)
-                         .replace('{{email}}', lowerCaseEmail)
-                         .replace('{{password}}', rndmPassword);
+      .replace('{{lastName}}', lastName)
+      .replace('{{email}}', lowerCaseEmail)
+      .replace('{{password}}', rndmPassword);
 
     // Send email with librarian data and password
     const mailOptions = {
       from: process.env.EMAIL_FROM,
       to: lowerCaseEmail,
       subject: 'Welcome to My Library',
-      html: emailHtml 
+      html: emailHtml
     };
 
     emailTransporter.sendMail(mailOptions, (error, info) => {
@@ -218,6 +218,10 @@ exports.showLibrarian = async (req, res) => {
 
     // Find the librarian by ID
     const librarian = await Librarian.findById(librarianId)
+      .populate({
+        path: 'libraries',
+        select: '_id name',
+      })
       .select("-password -otpCode -emailCode -passwordRecoveryToken"); // Exclude sensitive fields
 
     // Check if the librarian exists
@@ -518,7 +522,7 @@ exports.searchLibrarians = async (req, res) => {
 exports.getOpenAllLibrarians = async (req, res) => {
   try {
 
-    const librarians = await Librarian.find({deleted:false})
+    const librarians = await Librarian.find({ deleted: false })
       .sort({ firstName: 1 })
       .select("-password -otpCode -emailCode -passwordRecoveryToken");
 
