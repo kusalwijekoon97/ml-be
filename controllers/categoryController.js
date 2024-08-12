@@ -97,6 +97,7 @@ exports.getAllCategories = async (req, res) => {
       : {};
 
     const categories = await Category.find(query)
+      .populate('library')
       .populate('subCategories')
       .skip(skip)
       .limit(limit);
@@ -153,6 +154,9 @@ exports.getSingleCategory = async (req, res) => {
         path: 'subCategories',
         select: 'name is_active createdAt', // Select only the fields you need
         match: { is_active: true }, // Optional: filter to include only active subcategories
+      }).populate({
+        path: 'library',
+        select: '_id name',
       });
 
     if (!category) {
@@ -209,6 +213,8 @@ exports.getSearchedCategories = async (req, res) => { //retrieving search-filter
     });
   }
 };
+
+
 exports.updateCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
@@ -305,7 +311,6 @@ exports.updateCategory = async (req, res) => {
     });
   }
 };
-
 
 
 exports.deleteCategory = async (req, res) => {

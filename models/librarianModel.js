@@ -28,7 +28,7 @@ const librarianSchema = new Schema({
   libraries: [
     {
       type: Schema.Types.ObjectId,
-      ref: "library",
+      ref: "Library",
     },
   ],
   restrictions: Array,

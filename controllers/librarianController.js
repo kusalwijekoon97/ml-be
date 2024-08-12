@@ -1,15 +1,23 @@
 // controllers\librarianController.js
+const fs = require("fs");
+const path = require("path");
 const Librarian = require("../models/librarianModel");
 const bcrypt = require("bcryptjs");
+const emailTransporter = require("../utils/emailTransporter");
+const { log } = require("console");
+const Library = require("../models/libraryModel");
+require('dotenv').config();
 
-
-const randomCode = () => {
+const generateRandomCode = () => {
   return Math.random().toString(36).substr(2, 8).toUpperCase();
 };
 
+
 exports.storeLibrarian = async (req, res) => {
   try {
-    const { email, phone, firstName, lastName, nic, address } = req.body;
+    const { email, phone, firstName, lastName, nic, address, library } = req.body;
+
+    console.log(req.body);
 
     // Ensure email and phone are provided
     if (!email || !phone || !firstName || !lastName || !nic) {
@@ -51,8 +59,12 @@ exports.storeLibrarian = async (req, res) => {
       });
     }
 
-    // Create new librarian
-    const defaultPassword = "11111111";
+    const rndmPassword = generateRandomCode();
+    // console.log(rndmPassword);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(rndmPassword, saltRounds);
+
+    // Create new librarian with hashed password
     const newLibrarian = new Librarian({
       firstName,
       lastName,
@@ -60,11 +72,50 @@ exports.storeLibrarian = async (req, res) => {
       email: lowerCaseEmail,
       address,
       phone,
-      password: defaultPassword,
-      libraries: null,
+      password: hashedPassword,
+      libraries: library
     });
-
     await newLibrarian.save();
+
+    // Update existing libraries with the new librarian
+    if (library && library.length > 0) {
+      // Update all libraries assigned to the new librarian
+      await Library.updateMany(
+        { _id: { $in: library } },
+        { $set: { librarian: newLibrarian._id } }
+      );
+      // Optionally, clear the librarian field in other libraries if needed
+      // This step is optional based on your requirements
+      await Library.updateMany(
+        { librarian: newLibrarian._id, _id: { $nin: library } },
+        { $set: { librarian: null } }
+      );
+    }
+
+    // Load the HTML email template
+    const templatePath = path.join(__dirname, '../src/emails/create_librarian.html');
+    let emailHtml = fs.readFileSync(templatePath, 'utf8');
+    // Replace placeholders with actual data
+    emailHtml = emailHtml.replace('{{firstName}}', firstName)
+      .replace('{{lastName}}', lastName)
+      .replace('{{email}}', lowerCaseEmail)
+      .replace('{{password}}', rndmPassword);
+
+    // Send email with librarian data and password
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      to: lowerCaseEmail,
+      subject: 'Welcome to My Library',
+      html: emailHtml
+    };
+
+    emailTransporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
 
     return res.status(201).json({
       success: true,
@@ -83,7 +134,6 @@ exports.storeLibrarian = async (req, res) => {
     });
   }
 };
-
 
 
 exports.getAllLibrarians = async (req, res) => {
@@ -145,7 +195,6 @@ exports.getAllLibrarians = async (req, res) => {
 };
 
 
-
 exports.getLibrariansByLibrary = async (req, res) => {
   try {
     Librarian.find({ libraries: { $in: req.body.libraries }, firstName: 1 })
@@ -161,12 +210,18 @@ exports.getLibrariansByLibrary = async (req, res) => {
     });
   }
 };
+
+
 exports.showLibrarian = async (req, res) => {
   try {
     const librarianId = req.params.id;
 
     // Find the librarian by ID
     const librarian = await Librarian.findById(librarianId)
+      .populate({
+        path: 'libraries',
+        select: '_id name',
+      })
       .select("-password -otpCode -emailCode -passwordRecoveryToken"); // Exclude sensitive fields
 
     // Check if the librarian exists
@@ -198,6 +253,8 @@ exports.showLibrarian = async (req, res) => {
     });
   }
 };
+
+
 exports.deleteLibrarian = async (req, res) => {
   try {
     const librarianId = req.params.id;
@@ -235,11 +292,10 @@ exports.deleteLibrarian = async (req, res) => {
     });
   }
 };
-
 exports.updateLibrarian = async (req, res) => {
   try {
     const librarianId = req.params.id;
-    const { email, phone, firstName, lastName, nic, address } = req.body;
+    const { email, phone, firstName, lastName, nic, address, libraries } = req.body;
 
     // Check if the librarian exists
     const librarian = await Librarian.findById(librarianId);
@@ -304,13 +360,32 @@ exports.updateLibrarian = async (req, res) => {
     librarian.address = address;
     librarian.phone = phone;
 
-    // Save updated librarian
+    // Update associated libraries
+    if (libraries && libraries.length > 0) {
+      const libraryIds = libraries.map(lib => lib.value); // Extract only the ObjectId values
+
+      // Assign the librarian to the provided libraries
+      await Library.updateMany(
+        { _id: { $in: libraryIds } },
+        { $set: { librarian: librarian._id } }
+      );
+      // Clear the librarian field from other libraries
+      await Library.updateMany(
+        { librarian: librarian._id, _id: { $nin: libraryIds } },
+        { $set: { librarian: null } }
+      );
+
+      // Assign the new libraryIds to the librarian
+      librarian.libraries = libraryIds;
+    }
+
+    // Save the updated librarian
     await librarian.save();
 
     return res.status(200).json({
       success: true,
       message: "Librarian updated successfully",
-      librarian,
+      data: librarian,
     });
   } catch (error) {
     console.error("Error updating librarian:", error);
@@ -324,6 +399,8 @@ exports.updateLibrarian = async (req, res) => {
     });
   }
 };
+
+
 
 
 
@@ -436,6 +513,7 @@ exports.changeStatus = async (req, res) => {
 //   }
 // };
 
+
 exports.searchLibrarians = async (req, res) => {
   try {
     // console.log(`req.body`, req.body);
@@ -454,6 +532,45 @@ exports.searchLibrarians = async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: err.toString(),
+    });
+  }
+};
+
+
+
+// all -open---------------------------------------------------------
+exports.getOpenAllLibrarians = async (req, res) => {
+  try {
+
+    const librarians = await Librarian.find({ deleted: false })
+      .sort({ firstName: 1 })
+      .select("-password -otpCode -emailCode -passwordRecoveryToken");
+
+
+    if (librarians.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No librarians found",
+        error: {
+          code: "NO_LIBRARIANS_FOUND",
+          details: "There are currently no librarians available in the database.",
+        },
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: librarians
+    });
+  } catch (err) {
+    console.error("Error retrieving librarians:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
     });
   }
 };
