@@ -292,12 +292,10 @@ exports.deleteLibrarian = async (req, res) => {
     });
   }
 };
-
-
 exports.updateLibrarian = async (req, res) => {
   try {
     const librarianId = req.params.id;
-    const { email, phone, firstName, lastName, nic, address } = req.body;
+    const { email, phone, firstName, lastName, nic, address, libraries } = req.body;
 
     // Check if the librarian exists
     const librarian = await Librarian.findById(librarianId);
@@ -362,13 +360,32 @@ exports.updateLibrarian = async (req, res) => {
     librarian.address = address;
     librarian.phone = phone;
 
-    // Save updated librarian
+    // Update associated libraries
+    if (libraries && libraries.length > 0) {
+      const libraryIds = libraries.map(lib => lib.value); // Extract only the ObjectId values
+
+      // Assign the librarian to the provided libraries
+      await Library.updateMany(
+        { _id: { $in: libraryIds } },
+        { $set: { librarian: librarian._id } }
+      );
+      // Clear the librarian field from other libraries
+      await Library.updateMany(
+        { librarian: librarian._id, _id: { $nin: libraryIds } },
+        { $set: { librarian: null } }
+      );
+
+      // Assign the new libraryIds to the librarian
+      librarian.libraries = libraryIds;
+    }
+
+    // Save the updated librarian
     await librarian.save();
 
     return res.status(200).json({
       success: true,
       message: "Librarian updated successfully",
-      librarian,
+      data: librarian,
     });
   } catch (error) {
     console.error("Error updating librarian:", error);
@@ -382,6 +399,9 @@ exports.updateLibrarian = async (req, res) => {
     });
   }
 };
+
+
+
 
 
 exports.changeStatus = async (req, res) => {
