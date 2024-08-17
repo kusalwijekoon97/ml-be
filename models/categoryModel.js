@@ -6,6 +6,11 @@ const CategoriesSchema = new Schema({
     type: String,
     required: true
   },
+  main_slug: {
+    type: String,
+    unique:true,
+    required: true
+  },
   library: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Library'
