@@ -6,6 +6,11 @@ const SubCategoriesSchema = new Schema({
     type: String,
     required: true
   },
+  sub_slug: {
+    type: String,
+    unique:true,
+    required: true
+  },
   parentCategory: {
     type: Schema.Types.ObjectId,
     ref: 'Category', 

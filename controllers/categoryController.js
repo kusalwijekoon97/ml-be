@@ -5,7 +5,7 @@ const SubCategory = require("../models/categorySubModel");
 // category ////////////////////////////////////////////
 exports.storeCategory = async (req, res) => {
   try {
-    const { name, library, subCategories } = req.body;
+    const { name, main_slug, library, subCategories } = req.body;
 
     // Check if a category with the same name already exists
     const categoryExists = await Category.findOne({ name });
@@ -23,6 +23,7 @@ exports.storeCategory = async (req, res) => {
     // Create a new category
     const newCategory = new Category({
       name,
+      main_slug,
       library: Array.isArray(library) ? library : [library],
       subCategories: [] // Will be filled after creating subcategories
     });
@@ -33,9 +34,10 @@ exports.storeCategory = async (req, res) => {
     // Create subcategories and link them to the created category
     const subCategoryIds = [];
     const subCategoryData = [];
-    for (const subCategoryName of subCategories) {
+    for (const subCategory of subCategories) {
       const newSubCategory = new SubCategory({
-        name: subCategoryName,
+        name: subCategory.name,
+        sub_slug: subCategory.sub_slug,
         parentCategory: savedCategory._id,
       });
       const savedSubCategory = await newSubCategory.save();
@@ -152,7 +154,7 @@ exports.getSingleCategory = async (req, res) => {
     const category = await Category.findById(categoryId)
       .populate({
         path: 'subCategories',
-        select: 'name is_active createdAt', // Select only the fields you need
+        select: 'name sub_slug is_active createdAt', // Select only the fields you need
         match: { is_active: true }, // Optional: filter to include only active subcategories
       }).populate({
         path: 'library',
@@ -218,7 +220,7 @@ exports.getSearchedCategories = async (req, res) => { //retrieving search-filter
 exports.updateCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
-    const { name, library, subCategories } = req.body;
+    const { name, main_slug, library, subCategories } = req.body;
 
     // Validate that the category ID is provided
     if (!categoryId) {
@@ -235,7 +237,7 @@ exports.updateCategory = async (req, res) => {
     // Update the main category
     const updatedCategory = await Category.findByIdAndUpdate(
       categoryId,
-      { name, library },
+      { name, main_slug, library },
       { new: true }
     );
 
@@ -268,12 +270,15 @@ exports.updateCategory = async (req, res) => {
           if (!subCategory.name) {
             throw new Error("Subcategory name is required");
           }
+          if (!subCategory.sub_slug) {
+            throw new Error("Subcategory slug is required");
+          }
 
           if (subCategory._id) {
             // Update existing subcategory
             const updatedSubCategory = await SubCategory.findByIdAndUpdate(
               subCategory._id,
-              { name: subCategory.name },
+              { name: subCategory.name, sub_slug: subCategory.sub_slug },
               { new: true }
             );
             return updatedSubCategory._id;
@@ -281,6 +286,7 @@ exports.updateCategory = async (req, res) => {
             // Create new subcategory
             const newSubCategory = new SubCategory({
               name: subCategory.name,
+              sub_slug: subCategory.sub_slug ,
               parentCategory: categoryId,
             });
             const savedSubCategory = await newSubCategory.save();
