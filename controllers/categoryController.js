@@ -89,14 +89,19 @@ exports.getAllCategories = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
     const search = req.query.search ? req.query.search.trim() : '';
+    const selectedLibrary = req.query.selectedLibrary || 'All';
+console.log(selectedLibrary);
 
-    const query = search
-      ? {
+    const query = {
+      ...(search && {
         $or: [
           { name: { $regex: search, $options: 'i' } }
-        ],
-      }
-      : {};
+        ]
+      }),
+      // ...(selectedLibrary !== 'All' && {
+      //   library: selectedLibrary
+      // })
+    };
 
     const categories = await Category.find(query)
       .populate('library')
@@ -286,7 +291,7 @@ exports.updateCategory = async (req, res) => {
             // Create new subcategory
             const newSubCategory = new SubCategory({
               name: subCategory.name,
-              sub_slug: subCategory.sub_slug ,
+              sub_slug: subCategory.sub_slug,
               parentCategory: categoryId,
             });
             const savedSubCategory = await newSubCategory.save();
