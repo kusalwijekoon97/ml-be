@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const auth = require("../routes/auth/authRoutes");
+const dashboard = require("../routes/dashboardRoutes");
 const admin = require("../routes/adminRoutes");
 const user = require("../routes/userRoutes");
 const librarian = require("../routes/librarianRoutes");
@@ -16,6 +17,8 @@ const mobileUser = require("../routes/mobileUserRoutes");
 
 // auth routes
 router.use("/auth", auth);
+// dashboard routes
+router.use("/dashboard", dashboard);
 // admin routes
 router.use("/admins", admin);
 // user routes
