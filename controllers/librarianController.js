@@ -157,6 +157,7 @@ exports.getAllLibrarians = async (req, res) => {
       : {};
 
     const librarians = await Librarian.find(query)
+    .populate('libraries')
       .skip(skip)
       .limit(limit)
       .sort({ firstName: 1 })
