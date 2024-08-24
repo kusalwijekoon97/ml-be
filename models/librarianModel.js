@@ -9,13 +9,13 @@ const librarianSchema = new Schema({
   email: {
     type: String,
     required: true,
-    unique:true
+    unique: true
   },
   address: String,
   phone: {
     type: String,
     required: true,
-    unique:true
+    unique: true
   },
   status: {
     type: Boolean,
@@ -32,6 +32,48 @@ const librarianSchema = new Schema({
     },
   ],
   restrictions: Array,
+  permissions: {
+    users: {
+      type: Boolean,
+      default: false
+    },
+    readers: {
+      type: Boolean,
+      default: false
+    },
+    categories: {
+      type: Boolean,
+      default: false
+    },
+    books: {
+      type: Boolean,
+      default: false
+    },
+    authors: {
+      type: Boolean,
+      default: false
+    },
+    statics: {
+      type: Boolean,
+      default: false
+    },
+    sales: {
+      type: Boolean,
+      default: false
+    },
+    packages: {
+      type: Boolean,
+      default: false
+    },
+    notifications: {
+      type: Boolean,
+      default: false
+    },
+    settings: {
+      type: Boolean,
+      default: false
+    }
+  },
   password: {
     type: String,
     required: true,
