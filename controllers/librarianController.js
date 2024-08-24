@@ -15,7 +15,7 @@ const generateRandomCode = () => {
 
 exports.storeLibrarian = async (req, res) => {
   try {
-    const { email, phone, firstName, lastName, nic, address, library } = req.body;
+    const { email, phone, firstName, lastName, nic, address, library, permissions } = req.body;
 
     console.log(req.body);
 
@@ -73,7 +73,8 @@ exports.storeLibrarian = async (req, res) => {
       address,
       phone,
       password: hashedPassword,
-      libraries: library
+      libraries: library,
+      permissions: permissions || {}
     });
     await newLibrarian.save();
 
@@ -156,6 +157,7 @@ exports.getAllLibrarians = async (req, res) => {
       : {};
 
     const librarians = await Librarian.find(query)
+    .populate('libraries')
       .skip(skip)
       .limit(limit)
       .sort({ firstName: 1 })
@@ -292,10 +294,12 @@ exports.deleteLibrarian = async (req, res) => {
     });
   }
 };
+
+
 exports.updateLibrarian = async (req, res) => {
   try {
     const librarianId = req.params.id;
-    const { email, phone, firstName, lastName, nic, address, libraries } = req.body;
+    const { email, phone, firstName, lastName, nic, address, libraries, permissions } = req.body;
 
     // Check if the librarian exists
     const librarian = await Librarian.findById(librarianId);
@@ -377,6 +381,10 @@ exports.updateLibrarian = async (req, res) => {
 
       // Assign the new libraryIds to the librarian
       librarian.libraries = libraryIds;
+    }
+
+    if (permissions) {
+      librarian.permissions = permissions; // Assuming permissions is an object or array as needed
     }
 
     // Save the updated librarian
