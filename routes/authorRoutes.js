@@ -10,5 +10,6 @@ router.get("/:id", authorController.showAuthor);
 router.post("/update/:id", upload.single('profileImage'), authorController.updateAuthor);
 router.post("/delete/:id", authorController.deleteAuthor);
 router.post("/change-status/:id", authorController.changeStatusAuthor);
+router.get("/all-open", authorController.getOpenAllAuthors);
 
 module.exports = router;
