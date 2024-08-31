@@ -23,7 +23,7 @@ exports.storeBook = async (req, res) => {
       firstPublisher,
       seriesNumber,
       series,
-      material: { completeMaterials }
+      material: { completeMaterials, chapters  }
     } = req.body;
 
     const coverImageName = req.file ? await uploadFile(req.file) : null;
@@ -36,15 +36,12 @@ exports.storeBook = async (req, res) => {
     const audioBookFormats = [];
 
     completeMaterials.forEach(materialItem => {
-      // Debugging: Log each materialItem
-      console.log('Processing materialItem:', materialItem);
-
       const formattedMaterial = {
         formatType: materialItem.formatType,
         publisher: materialItem.publisher || '',
         publishedDate: materialItem.publishedDate || '',
-        completeSource: materialItem.source || '', // Ensure you use the correct field name
-        chapters: [] // Add chapters if available
+        completeSource: materialItem.source || '',
+        chapters: [] // Initialize empty chapters array
       };
 
       if (materialItem.formatType === 'MP3') {
@@ -52,6 +49,32 @@ exports.storeBook = async (req, res) => {
       } else if (['PDF', 'EPUB', 'TEXT'].includes(materialItem.formatType)) {
         eBookFormats.push(formattedMaterial);
       }
+    });
+
+    // Append chapters to the relevant formats
+    chapters.forEach(chapter => {
+      const chapterDetails = {
+        chapterNumber: chapter.chapter_number,
+        chapterName: chapter.chapter_name,
+        source: chapter.chapter_source_pdf || chapter.chapter_source_epub || chapter.chapter_source_text || chapter.chapter_source_mp3,
+        voice: chapter.chapter_mp3_voice // Add voice only for MP3
+      };
+
+      eBookFormats.forEach(format => {
+        if (format.formatType === 'PDF' && chapter.chapter_source_pdf) {
+          format.chapters.push(chapterDetails);
+        } else if (format.formatType === 'EPUB' && chapter.chapter_source_epub) {
+          format.chapters.push(chapterDetails);
+        } else if (format.formatType === 'TEXT' && chapter.chapter_source_text) {
+          format.chapters.push(chapterDetails);
+        }
+      });
+
+      audioBookFormats.forEach(format => {
+        if (format.formatType === 'MP3' && chapter.chapter_source_mp3) {
+          format.chapters.push(chapterDetails);
+        }
+      });
     });
 
     if (eBookFormats.length > 0) {
@@ -110,6 +133,74 @@ exports.storeBook = async (req, res) => {
     }
   } catch (err) {
     console.error("Error creating book:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
+
+
+exports.getAllBooks = async (req, res) => { //retrieving all data
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.search ? req.query.search.trim() : '';
+
+    const query = {
+      ...(
+        search && {
+          $or: [
+            { name: { $regex: search, $options: 'i' } },
+          ],
+        }
+      ),
+    };
+
+    const books = await Book.find(query)
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: 'authorId',
+        select: 'firstname lastname', 
+      })
+      .populate({
+        path: 'library',
+        select: 'name', 
+      })
+      .sort({ name: 1 });
+
+    const totalItems = await Book.countDocuments(query);
+
+
+    // Check if any books were found
+    if (books.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No books found",
+        error: {
+          code: "NO_BOOKS_FOUND",
+          details: "There are no books available in the database.",
+        },
+      });
+    }
+
+    // Return the list of books
+    return res.status(200).json({
+      success: true,
+      message: "Books retrieved successfully",
+      data: books,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+      currentPage: page,
+    });
+  } catch (err) {
+    console.error("Error retrieving books:", err);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",

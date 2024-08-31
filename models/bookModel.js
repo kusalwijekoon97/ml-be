@@ -11,7 +11,7 @@ const sourceSchema = new Schema({
 const chapterSchema = new Schema({
   chapterNumber: String,
   chapterName: String,
-  source: [sourceSchema],
+  source: String,
 });
 
 const formatSchema = new Schema({

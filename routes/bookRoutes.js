@@ -8,5 +8,6 @@ const router = express.Router();
 
 // Define multer fields configuration based on the frontend form structure
 router.post("/store", upload.single('coverImage'), bookController.storeBook);
+router.get("/all", bookController.getAllBooks);
 
 module.exports = router;
