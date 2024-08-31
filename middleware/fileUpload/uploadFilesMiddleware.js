@@ -11,7 +11,11 @@ const uploadFiles = async (files) => {
       throw new Error("No files selected.");
     }
 
-    const generateFileName = () => Buffer.from(uuidv4() + Date.now().toString()).toString('hex');
+    const generateFileName = () => {
+      const uuidPart = uuidv4().replace(/-/g, '').slice(0, 10);
+      const timestampPart = Date.now().toString().slice(-6);
+      return uuidPart + timestampPart;
+    };
 
     const uploadFile = async (file) => {
       let fileBuffer = file.buffer;

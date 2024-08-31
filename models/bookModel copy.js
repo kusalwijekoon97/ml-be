@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-//models/BookModel.js
+// models\bookModel.js
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -31,100 +30,62 @@ const materialSchema = new Schema({
 const bookSchema = new Schema({
   name: {
     type: String,
-    required: false,
+    required: true,
   },
   authorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Author",
-    required: false,
+    required: true,
   },
   translatorId: {
     type: String,
     required: false,
   },
-  category: { type: [String], required: false },
+  category: { type: [String], required: true },
   subCategory: [String],
   isbn: {
     type: String,
-    required: false,
+    required: true,
     unique: true,
   },
   coverImage: String,
   additionalImages: [String],
   description: {
     type: String,
-    required: false,
+    required: true,
   },
   publisher: {
     type: String,
-    required: false,
+    required: true,
   },
   publishDate: {
     type: String,
-    required: false,
+    required: true,
   },
   language: {
     type: String,
-    required: false,
+    required: true,
   },
   languageCode: {
     type: String,
-    required: false,
+    required: true,
   },
   firstPublisher: String,
   accessType: {
     type: String,
-    required: false,
+    required: true,
   },
   seriesNumber: Number,
   viewInLibrary: {
     type: Boolean,
     default: true,
   },
-  series: {
-    type: String,
-    required: false,
-  },
+  series: [String],
   material: [materialSchema],
   is_active: {
     type: Boolean,
-    default: true,
+    default: true
   },
-=======
-// models/bookModel.js
-const mongoose = require('mongoose');
-
-const bookSchema = new mongoose.Schema({
-  name: String,
-  author: mongoose.Schema.Types.ObjectId,
-  translator: mongoose.Schema.Types.ObjectId,
-  isbn: String,
-  coverImage: String,
-  publisher: String,
-  publishDate: Date,
-  library: mongoose.Schema.Types.ObjectId,
-  category: [mongoose.Schema.Types.ObjectId],
-  subCategory: [mongoose.Schema.Types.ObjectId],
-  description: String,
-  hasSeries: Boolean,
-  noOfSeries: Number,
-  bookType: String,
-  materials: [{
-    formatType: String,
-    publisher: String,
-    publishedDate: Date,
-    source: String
-  }],
-  chapters: [{
-    chapterNumber: Number,
-    chapterName: String,
-    chapterSourcePdf: String,
-    chapterSourceEpub: String,
-    chapterSourceText: String,
-    chapterSourceMp3: String,
-    chapterVoice: String
-  }]
->>>>>>> dev-new-05_31_2024
 });
 
-module.exports = mongoose.model('Book', bookSchema);
+module.exports = mongoose.model("Book", bookSchema);

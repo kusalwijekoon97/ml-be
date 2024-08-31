@@ -1,31 +1,36 @@
+<<<<<<< HEAD
 const Book = require("../models/bookModel");
 const Author = require("../models/authorModel");
 const uploadFiles = require("../middleware/fileUpload/uploadFilesMiddlewareForBooks");
 
 exports.storeBook = async (req, res) => {
   console.log("Payload received:", req.body);
+=======
+// controllers/bookController.js
+const Book = require("../models/bookModel");
+const uploadMaterials = require("../middleware/fileUpload/uploadMaterialsMiddleware");
+
+exports.storeBook = async (req, res) => {
+>>>>>>> dev-new-05_31_2024
   try {
     const {
       name,
-      authorId,
-      translatorId,
-      category,
-      subCategory,
+      author,
+      translator,
       isbn,
-      coverImage,
-      additionalImages,
-      description,
       publisher,
       publishDate,
-      language,
-      languageCode,
-      firstPublisher,
-      accessType,
-      seriesNumber,
-      series,
-      material,
+      library,
+      category,
+      subCategory,
+      description,
+      hasSeries,
+      noOfSeries,
+      bookType,
+      chapters
     } = req.body;
 
+<<<<<<< HEAD
     // console.log("material received:", req.body.material);
 
     const materialSources = req.body.materialSources || [];
@@ -244,3 +249,68 @@ exports.deleteBook = async (req, res) => {
     res.status(500).json({ message: "Error while deleting book" });
   }
 };
+=======
+    // Handle file URLs from uploaded files
+    const coverImageUrl = req.awsFiles.find(url => url.includes('coverImage')) || null;
+
+    // Handle completeMaterials
+    const completeMaterials = [];
+    let index = 0;
+    while (req.body[`material[completeMaterials][${index}][formatType]`]) {
+      const formatType = req.body[`material[completeMaterials][${index}][formatType]`];
+      const publisher = req.body[`material[completeMaterials][${index}][publisher]`];
+      const publishedDate = req.body[`material[completeMaterials][${index}][publishedDate]`];
+      const sourceFiles = req.awsFiles.filter(url => url.includes(`material[completeMaterials][${index}][source]`)) || [];
+      
+      sourceFiles.forEach(fileURL => {
+        completeMaterials.push({
+          formatType,
+          publisher,
+          publishedDate,
+          source: fileURL
+        });
+      });
+
+      index++;
+    }
+
+    // Handle chapters
+    const chapterDetails = chapters.map((item, index) => ({
+      chapterNumber: item.chapter_number,
+      chapterName: item.chapter_name,
+      chapterSourcePdf: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_pdf]`)) || null,
+      chapterSourceEpub: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_epub]`)) || null,
+      chapterSourceText: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_text]`)) || null,
+      chapterSourceMp3: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_mp3]`)) || null,
+      chapterVoice: item.chapter_voice
+    }));
+
+    // Create a new Book instance
+    const book = new Book({
+      name,
+      author,
+      translator,
+      isbn,
+      coverImage: coverImageUrl,
+      publisher,
+      publishDate,
+      library,
+      category,
+      subCategory,
+      description,
+      hasSeries,
+      noOfSeries,
+      bookType,
+      materials: completeMaterials,
+      chapters: chapterDetails
+    });
+
+    // Save to database
+    await book.save();
+
+    res.status(201).json({ message: "Book stored successfully!", data: book });
+  } catch (err) {
+    res.status(500).json({ message: err.toString() });
+  }
+};
+>>>>>>> dev-new-05_31_2024
