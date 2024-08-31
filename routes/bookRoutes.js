@@ -25,6 +25,7 @@ const bookController = require("../controllers/bookController");
 const router = express.Router();
 
 // Define multer fields configuration based on the frontend form structure
+<<<<<<< HEAD
 router.post("/store", upload.fields([
     { name: 'coverImage', maxCount: 1 },
     { name: 'material[completeMaterials][0][source]', maxCount: 1 },
@@ -36,6 +37,14 @@ router.post("/store", upload.fields([
     // { name: 'material[chapters][][chapter_source_text]', maxCount: 10 },
     // { name: 'material[chapters][][chapter_source_mp3]', maxCount: 10 }
 ]), bookController.storeBook);
+>>>>>>> dev-new-05_31_2024
+=======
+router.post("/store", upload.single('coverImage'), bookController.storeBook);
+router.get("/all", bookController.getAllBooks);
+router.get("/:id", bookController.showBook);
+// router.post("/update/:id", upload.single('fileBook'), bookController.updateBook);
+router.post("/delete/:id", bookController.deleteBook);
+router.post("/change-status/:id", bookController.changeStatusBook);
 >>>>>>> dev-new-05_31_2024
 
 module.exports = router;

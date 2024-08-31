@@ -161,6 +161,43 @@ exports.showMaterial = async (req, res) => { //retrieve a single material by ID
   }
 };
 
+exports.getOpenAllMaterials = async (req, res) => {
+  try {
+    const materials = await Material.find({ is_active: true })
+      .sort({ name: 1 })
+      .select('name material_path _id');
+
+    // Check if no materials were found
+    if (materials.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No materials found",
+        error: {
+          code: "MATERIALS_NOT_FOUND",
+          details: "No active materials are available in the system.",
+        },
+      });
+    }
+
+    // Return the list of materials
+    return res.status(200).json({
+      success: true,
+      message: "Materials retrieved successfully",
+      data: materials
+    });
+  } catch (err) {
+    console.error("Error retrieving materials:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
+
 exports.updateMaterial = async (req, res) => { //update a material by ID
   try {
     const materialId = req.params.id;
