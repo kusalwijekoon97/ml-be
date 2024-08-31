@@ -1,3 +1,4 @@
 /node_modules
 /access.log
 /error.log
+/debug.log
