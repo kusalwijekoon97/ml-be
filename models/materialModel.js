@@ -1,9 +1,11 @@
 // models\materialModel.js
+const { text } = require("express");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const materialSchema = new Schema({
   name: String,
+  material_path:String,
   CreatedAt: {
     type: Date,
     default: Date.now,

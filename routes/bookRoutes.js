@@ -1,21 +1,22 @@
-// routes\bookRoutes.js
-const express = require("express");
+// routes/bookRoutes.js
 
+const express = require("express");
+const multer = require("multer");
+const upload = require("../utils/multerForMaterials");
 const bookController = require("../controllers/bookController");
-// const { uploadImages } = require("../middleware/uploadImage");
 const router = express.Router();
 
-router.get("/all", bookController.getAll);
-// router.get("/get-all-admin", bookController.getAllAdmin);
-// router.get("/get-by-category/:id", bookController.getBookByCategory);
-// router.post("/get-by-library-admin", bookController.getAllByLibraryAdmin);
-// router.post("/get-by-library", bookController.getAllByLibrary);
-// router.get("/get-book/:id", bookController.getBook);
-// router.get("/toggle-view-library/:id", bookController.ToggleViewLibrary);
-
-router.post("/store", bookController.storeBook);
-// router.post("/update", uploadImages, bookController.editBook);
-// router.post("/search", bookController.search);
-// router.get("/increase-book-count/:id", bookController.increaseCount);
+// Define multer fields configuration based on the frontend form structure
+router.post("/store", upload.fields([
+    { name: 'coverImage', maxCount: 1 },
+    { name: 'material[completeMaterials][0][source]', maxCount: 1 },
+    { name: 'material[completeMaterials][1][source]', maxCount: 1 },
+    { name: 'material[completeMaterials][2][source]', maxCount: 1 },
+    { name: 'material[completeMaterials][3][source]', maxCount: 1 },
+    // { name: 'material[chapters][][chapter_source_pdf]', maxCount: 10 },
+    // { name: 'material[chapters][][chapter_source_epub]', maxCount: 10 },
+    // { name: 'material[chapters][][chapter_source_text]', maxCount: 10 },
+    // { name: 'material[chapters][][chapter_source_mp3]', maxCount: 10 }
+]), bookController.storeBook);
 
 module.exports = router;
