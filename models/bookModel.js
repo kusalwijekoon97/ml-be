@@ -18,6 +18,7 @@ const formatSchema = new Schema({
   formatType: String,
   Publisher: String,
   PublishedDate: String,
+  completeSource: String, 
   chapters: [chapterSchema],
 });
 

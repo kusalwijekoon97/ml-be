@@ -18,13 +18,64 @@ exports.storeBook = async (req, res) => {
       category,
       subCategory,
       description,
+      language,
+      languageCode,
+      firstPublisher,
+      seriesNumber,
+      series,
+      material: { completeMaterials }
     } = req.body;
-    const coverImageName = await uploadFile(req.file);
 
-    const newBook = await Book.create({ 
+    const coverImageName = req.file ? await uploadFile(req.file) : null;
+
+    // Initialize material types
+    const material = [];
+
+    // Categorize materials
+    const eBookFormats = [];
+    const audioBookFormats = [];
+
+    completeMaterials.forEach(materialItem => {
+      // Debugging: Log each materialItem
+      console.log('Processing materialItem:', materialItem);
+
+      const formattedMaterial = {
+        formatType: materialItem.formatType,
+        publisher: materialItem.publisher || '',
+        publishedDate: materialItem.publishedDate || '',
+        completeSource: materialItem.source || '', // Ensure you use the correct field name
+        chapters: [] // Add chapters if available
+      };
+
+      if (materialItem.formatType === 'MP3') {
+        audioBookFormats.push(formattedMaterial);
+      } else if (['PDF', 'EPUB', 'TEXT'].includes(materialItem.formatType)) {
+        eBookFormats.push(formattedMaterial);
+      }
+    });
+
+    if (eBookFormats.length > 0) {
+      material.push({
+        type: 'E_BOOK',
+        formats: eBookFormats
+      });
+    }
+
+    if (audioBookFormats.length > 0) {
+      material.push({
+        type: 'AUDIO_BOOK',
+        formats: audioBookFormats
+      });
+    }
+
+    // Debugging: Log the final material object
+    console.log('Categorized material:', material);
+
+    // Create new book with material
+    const newBook = await Book.create({
       name,
-      authorId:author,
-      translatorId:translator,
+      authorId: author,
+      translatorId: translator,
       isbn,
       publisher,
       publishDate,
@@ -32,9 +83,15 @@ exports.storeBook = async (req, res) => {
       category,
       subCategory,
       description,
-      coverImage: coverImageName 
+      coverImage: coverImageName,
+      language,
+      languageCode,
+      firstPublisher,
+      seriesNumber,
+      series,
+      material
     });
-    
+
     if (newBook) {
       return res.status(201).json({
         success: true,
