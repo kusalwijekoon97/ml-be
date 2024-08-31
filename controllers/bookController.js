@@ -211,3 +211,132 @@ exports.getAllBooks = async (req, res) => { //retrieving all data
     });
   }
 };
+
+exports.showBook = async (req, res) => { //retrieve a single book by ID
+  try {
+    const bookId = req.params.id;
+    // Find the book by ID
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+        error: {
+          code: "BOOK_NOT_FOUND",
+          details: "The book with the provided ID does not exist.",
+        },
+      });
+    }
+
+    // Return the book details
+    return res.status(200).json({
+      success: true,
+      message: "Book retrieved successfully",
+      data: book,
+    });
+  } catch (err) {
+    console.error("Error retrieving book:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
+
+
+
+exports.deleteBook = async (req, res) => { //delete a book by ID
+  try {
+    const bookId = req.params.id;
+
+    // Find the book by ID
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+        error: {
+          code: "BOOK_NOT_FOUND",
+          details: "The book with the provided ID does not exist.",
+        },
+      });
+    }
+
+    // Mark the book as deleted (soft delete)
+    book.deleted = true;
+    await book.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Book deleted successfully",
+    });
+  } catch (err) {
+    console.error("Error deleting book:", err);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
+
+exports.changeStatusBook = async (req, res) => {
+  try {
+    const bookId = req.params.id;
+
+    // Validate that the book ID is provided
+    if (!bookId) {
+      return res.status(400).json({
+        success: false,
+        message: "Book ID is required",
+        error: {
+          code: "BOOK_ID_MISSING",
+          details: "A valid book ID must be provided in the request parameters.",
+        },
+      });
+    }
+
+    // Find the book by ID
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+        error: {
+          code: "BOOK_NOT_FOUND",
+          details: `No book found with the ID ${bookId}.`,
+        },
+      });
+    }
+
+    // Toggle the is_active status
+    book.is_active = !book.is_active;
+    await book.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Book status changed successfully",
+      data: {
+        bookId: book._id,
+        is_active: book.is_active
+      },
+    });
+  } catch (error) {
+    console.error("Error changing book status:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: error.message,
+      },
+    });
+  }
+};
