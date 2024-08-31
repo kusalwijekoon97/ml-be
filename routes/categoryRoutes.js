@@ -7,6 +7,9 @@ const router = express.Router();
 // category
 router.post("/main/store", categoryController.storeCategory);
 router.get("/main/all", categoryController.getAllCategories);
+router.get("/main/all-open", categoryController.getOpenAllMainCategories);
+router.get("/main/all-filtered/:id", categoryController.getOpenMainLibFilteredCategories);
+router.get("/sub/all-open", categoryController.getOpenAllSubCategories);
 router.get("/main/:id", categoryController.getSingleCategory);
 router.get("/main/search", categoryController.getSearchedCategories);
 router.post("/main/update/:id", categoryController.updateCategory);

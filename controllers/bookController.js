@@ -1,99 +1,86 @@
-// controllers\bookController.js
+// controllers/bookController.js
 const Book = require("../models/bookModel");
-const Author = require("../models/authorModel");
+const uploadMaterials = require("../middleware/fileUpload/uploadMaterialsMiddleware");
 
 exports.storeBook = async (req, res) => {
-  console.log(11111111111111111);
-  console.log("Payload received:", req.body);
   try {
     const {
       name,
-      authorId,
-      translatorId,
-      category,
-      subCategory,
+      author,
+      translator,
       isbn,
-      coverImage,
-      additionalImages,
-      description,
       publisher,
       publishDate,
-      language,
-      languageCode,
-      firstPublisher,
-      accessType,
-      seriesNumber,
-      series,
-      material,
+      library,
+      category,
+      subCategory,
+      description,
+      hasSeries,
+      noOfSeries,
+      bookType,
+      chapters
     } = req.body;
 
-    // // Required fields validation
-    // if (!name ||!authorId ||!isbn ||!publisher ||!publishDate ||!language ||!languageCode ||!accessType) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "All required fields must be provided." });
-    // }
+    // Handle file URLs from uploaded files
+    const coverImageUrl = req.awsFiles.find(url => url.includes('coverImage')) || null;
 
-    // Check if author exists
-    const authorExists = await Author.findById(authorId);
-    if (!authorExists) {
-      return res.status(400).json({ message: "Author does not exist." });
-    }
-
-    // Check if translator exists (if provided)
-    // if (translatorId) {
-    //   const translatorExists = await Translator.findById(translatorId);
-    //   if (!translatorExists) {
-    //     return res.status(400).json({ message: "Translator does not exist." });
-    //   }
-    // }
-
-    // Check if book with same ISBN already exists
-    const bookExists = await Book.findOne({ isbn });
-    // console.log(bookExists);
-    if (bookExists) {
-      return res
-        .status(400)
-        .json({ message: "A book with the same ISBN already exists." });
-    }
-
-    const response = await Book.create({ ...req.body, viewInLibrary: true });
-    if (response) {
-      return res.status(200).json({
-        message: "Book Created",
+    // Handle completeMaterials
+    const completeMaterials = [];
+    let index = 0;
+    while (req.body[`material[completeMaterials][${index}][formatType]`]) {
+      const formatType = req.body[`material[completeMaterials][${index}][formatType]`];
+      const publisher = req.body[`material[completeMaterials][${index}][publisher]`];
+      const publishedDate = req.body[`material[completeMaterials][${index}][publishedDate]`];
+      const sourceFiles = req.awsFiles.filter(url => url.includes(`material[completeMaterials][${index}][source]`)) || [];
+      
+      sourceFiles.forEach(fileURL => {
+        completeMaterials.push({
+          formatType,
+          publisher,
+          publishedDate,
+          source: fileURL
+        });
       });
-    } else {
-      return res.status(400).json({
-        message: "Book Creation failed.",
-      });
+
+      index++;
     }
-  } catch (err) {
-    res.status(500).json({
-      message: err.toString(),
+
+    // Handle chapters
+    const chapterDetails = chapters.map((item, index) => ({
+      chapterNumber: item.chapter_number,
+      chapterName: item.chapter_name,
+      chapterSourcePdf: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_pdf]`)) || null,
+      chapterSourceEpub: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_epub]`)) || null,
+      chapterSourceText: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_text]`)) || null,
+      chapterSourceMp3: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_mp3]`)) || null,
+      chapterVoice: item.chapter_voice
+    }));
+
+    // Create a new Book instance
+    const book = new Book({
+      name,
+      author,
+      translator,
+      isbn,
+      coverImage: coverImageUrl,
+      publisher,
+      publishDate,
+      library,
+      category,
+      subCategory,
+      description,
+      hasSeries,
+      noOfSeries,
+      bookType,
+      materials: completeMaterials,
+      chapters: chapterDetails
     });
-  }
-};
 
-exports.getAll = async (req, res) => {
-  try {
-    const books = await Book.find({ viewInLibrary: true })
-      .populate("subCategory category")
-      .populate({
-        path: "category",
-        populate: {
-          path: "material",
-        },
-      })
-      .sort({ name: 1 });
-    if (books.length === 0) {
-      return res.status(400).json({
-        message: "No books found",
-      });
-    }
-    res.status(200).json(books);
+    // Save to database
+    await book.save();
+
+    res.status(201).json({ message: "Book stored successfully!", data: book });
   } catch (err) {
-    res.status(500).json({
-      message: err.toString(),
-    });
+    res.status(500).json({ message: err.toString() });
   }
 };
