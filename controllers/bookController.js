@@ -1,6 +1,9 @@
 // controllers/bookController.js
 const Book = require("../models/bookModel");
-const uploadMaterials = require("../middleware/fileUpload/uploadMaterialsMiddleware");
+const uploadFile = require("../middleware/fileUpload/uploadFilesMiddleware");
+const s3Client = require("../utils/s3Client");
+const { S3Client, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 exports.storeBook = async (req, res) => {
   try {
@@ -15,72 +18,48 @@ exports.storeBook = async (req, res) => {
       category,
       subCategory,
       description,
-      hasSeries,
-      noOfSeries,
-      bookType,
-      chapters
     } = req.body;
+    const coverImageName = await uploadFile(req.file);
 
-    // Handle file URLs from uploaded files
-    const coverImageUrl = req.awsFiles.find(url => url.includes('coverImage')) || null;
-
-    // Handle completeMaterials
-    const completeMaterials = [];
-    let index = 0;
-    while (req.body[`material[completeMaterials][${index}][formatType]`]) {
-      const formatType = req.body[`material[completeMaterials][${index}][formatType]`];
-      const publisher = req.body[`material[completeMaterials][${index}][publisher]`];
-      const publishedDate = req.body[`material[completeMaterials][${index}][publishedDate]`];
-      const sourceFiles = req.awsFiles.filter(url => url.includes(`material[completeMaterials][${index}][source]`)) || [];
-      
-      sourceFiles.forEach(fileURL => {
-        completeMaterials.push({
-          formatType,
-          publisher,
-          publishedDate,
-          source: fileURL
-        });
-      });
-
-      index++;
-    }
-
-    // Handle chapters
-    const chapterDetails = chapters.map((item, index) => ({
-      chapterNumber: item.chapter_number,
-      chapterName: item.chapter_name,
-      chapterSourcePdf: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_pdf]`)) || null,
-      chapterSourceEpub: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_epub]`)) || null,
-      chapterSourceText: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_text]`)) || null,
-      chapterSourceMp3: req.awsFiles.find(url => url.includes(`material[chapters][${index}][chapter_source_mp3]`)) || null,
-      chapterVoice: item.chapter_voice
-    }));
-
-    // Create a new Book instance
-    const book = new Book({
+    const newBook = await Book.create({ 
       name,
-      author,
-      translator,
+      authorId:author,
+      translatorId:translator,
       isbn,
-      coverImage: coverImageUrl,
       publisher,
       publishDate,
       library,
       category,
       subCategory,
       description,
-      hasSeries,
-      noOfSeries,
-      bookType,
-      materials: completeMaterials,
-      chapters: chapterDetails
+      coverImage: coverImageName 
     });
-
-    // Save to database
-    await book.save();
-
-    res.status(201).json({ message: "Book stored successfully!", data: book });
+    
+    if (newBook) {
+      return res.status(201).json({
+        success: true,
+        message: "Book created successfully",
+        data: newBook,
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Book creation failed",
+        error: {
+          code: "BOOK_CREATION_FAILED",
+          details: "The book could not be created due to an unknown issue.",
+        },
+      });
+    }
   } catch (err) {
-    res.status(500).json({ message: err.toString() });
+    console.error("Error creating book:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
   }
 };
