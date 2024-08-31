@@ -1,28 +1,44 @@
 // controllers\materialController.js
 const Material = require("../models/materialModel");
+const uploadFile = require("../middleware/fileUpload/uploadFilesMiddleware");
+const s3Client = require("../utils/s3Client");
+const { S3Client, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 exports.storeMaterial = async (req, res) => { //storing a material
   try {
     const { name } = req.body;
-    const materialExists = await Material.findOne({ name });
-    if (materialExists) {
-      return res.status(400).json({
-        message: "Cannot add another material with same name",
-      });
-    }
-    const response = await Material.create({name});
-    if (response) {
-      return res.status(200).json({
-        message: "Material Created",
+    const materialName = await uploadFile(req.file);
+    const newMaterial = await Material.create({ 
+      name: name, 
+      material_path: materialName 
+    });
+    
+    if (newMaterial) {
+      return res.status(201).json({
+        success: true,
+        message: "Material created successfully",
+        data: newMaterial,
       });
     } else {
       return res.status(400).json({
-        message: "Material Creation failed.",
+        success: false,
+        message: "Material creation failed",
+        error: {
+          code: "MATERIAL_CREATION_FAILED",
+          details: "The material could not be created due to an unknown issue.",
+        },
       });
     }
   } catch (err) {
-    res.status(500).json({
-      message: err.toString(),
+    console.error("Error creating material:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
     });
   }
 };
