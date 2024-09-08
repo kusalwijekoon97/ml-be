@@ -151,8 +151,9 @@ exports.getAllBooks = async (req, res) => { //retrieving all data
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
     const search = req.query.search ? req.query.search.trim() : '';
+    const library = req.query.library ? req.query.library.trim() : '';
 
-    const query = {
+    let query = {
       ...(
         search && {
           $or: [
@@ -161,6 +162,14 @@ exports.getAllBooks = async (req, res) => { //retrieving all data
         }
       ),
     };
+
+    // Add library filter if provided
+    if (library) {
+      query = {
+        ...query,
+        library: library  // Assuming "library" is an ObjectId reference
+      };
+    }
 
     const books = await Book.find(query)
       .skip(skip)
