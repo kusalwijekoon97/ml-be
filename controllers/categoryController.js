@@ -89,22 +89,30 @@ exports.getAllCategories = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
     const search = req.query.search ? req.query.search.trim() : '';
+    const library = req.query.library ? req.query.library.trim() : '';
 
-    const query = search
-      ? {
+    console.log("req-library :" + req.query.library);
+    console.log("req-search :" + req.query.search);
+    
+    // Construct query object
+    const query = {
+      ...(search && {
         $or: [
           { name: { $regex: search, $options: 'i' } }
         ],
-      }
-      : {};
+      }),
+      ...(library && { library }), // If library is provided, filter by library
+    };
 
+    // Fetch filtered categories
     const categories = await Category.find(query)
       .populate('library')
       .populate('subCategories')
       .skip(skip)
       .limit(limit);
 
-    const totalItems = await Category.countDocuments();
+    // Get the total count of filtered items
+    const totalItems = await Category.countDocuments(query);
 
     if (categories.length === 0) {
       return res.status(404).json({
@@ -133,6 +141,7 @@ exports.getAllCategories = async (req, res) => {
     });
   }
 };
+
 
 exports.getOpenAllMainCategories = async (req, res) => {
   try {
