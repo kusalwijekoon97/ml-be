@@ -18,7 +18,10 @@ exports.storeMaterial = async (req, res) => { //storing a material
       return res.status(201).json({
         success: true,
         message: "Material created successfully",
-        data: newMaterial,
+        data: {
+          name: newMaterial.name,
+          material_path: newMaterial.material_path,
+        }
       });
     } else {
       return res.status(400).json({
