@@ -97,6 +97,10 @@ const bookSchema = new Schema({
     type: Boolean,
     default: true
   },
+  CreatedAt: {
+    type: Date,
+    default: Date.now,
+  }
 });
 
 module.exports = mongoose.model("Book", bookSchema);
