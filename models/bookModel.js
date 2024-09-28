@@ -96,10 +96,6 @@ const bookSchema = new Schema({
   is_active: {
     type: Boolean,
     default: true
-  },
-  CreatedAt: {
-    type: Date,
-    default: Date.now,
   }
 });
 
