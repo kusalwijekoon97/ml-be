@@ -23,7 +23,7 @@ exports.storeBook = async (req, res) => {
       firstPublisher,
       seriesNumber,
       series,
-      material: { completeMaterials, chapters  }
+      material: { completeMaterials, chapters }
     } = req.body;
 
     const coverImageName = req.file ? await uploadFile(req.file) : null;
@@ -43,7 +43,7 @@ exports.storeBook = async (req, res) => {
         completeSource: materialItem.source || '',
         chapters: [] // Initialize empty chapters array
       };
-    
+
       // Separate formats into eBook or audioBook
       if (materialItem.formatType === 'MP3') {
         audioBookFormats.push(formattedMaterial);
@@ -51,7 +51,7 @@ exports.storeBook = async (req, res) => {
         eBookFormats.push(formattedMaterial);
       }
     });
-    
+
     // Append chapters to the relevant formats
     chapters.forEach(chapter => {
       // Construct chapter details for each format
@@ -59,7 +59,7 @@ exports.storeBook = async (req, res) => {
         chapterNumber: chapter.chapter_number,
         chapterName: chapter.chapter_name,
       };
-    
+
       // For eBook formats (PDF, EPUB, TEXT)
       eBookFormats.forEach(format => {
         if (format.formatType === 'PDF' && chapter.chapter_source_pdf) {
@@ -79,22 +79,51 @@ exports.storeBook = async (req, res) => {
           });
         }
       });
-    
+
       // For audiobook format (MP3)
       audioBookFormats.forEach(format => {
-        if (format.formatType === 'MP3' && chapter.chapter_source_mp3) {
-          format.chapters.push({
-            ...chapterDetails,
-            source: [{
-              source: chapter.chapter_source_mp3,
-              voice: chapter.chapter_mp3_voice || '', // Add voice for MP3 if available
-              duration: chapter.chapter_duration || '' // Add duration for MP3 if available
-            }]
-          });
+        if (format.formatType === 'MP3') {
+          const mp3Sources = [];
+
+          // Push male audio file if it exists
+          if (chapter.chapter_source_mp3_male) {
+            mp3Sources.push({
+              source: chapter.chapter_source_mp3_male,
+              voice: 'male', // Explicitly specify the voice type as 'male'
+              duration: chapter.chapter_duration_male || '' // Add duration for male audio
+            });
+          }
+
+          // Push female audio file if it exists
+          if (chapter.chapter_source_mp3_female) {
+            mp3Sources.push({
+              source: chapter.chapter_source_mp3_female,
+              voice: 'female', // Specify voice type as 'female'
+              duration: chapter.chapter_duration_female || '' // Add duration for female audio
+            });
+          }
+
+          // Push mix audio file if it exists
+          if (chapter.chapter_source_mp3_mix) {
+            mp3Sources.push({
+              source: chapter.chapter_source_mp3_mix,
+              voice: 'mix', // Specify voice type as 'mix'
+              duration: chapter.chapter_duration_mix || '' // Add duration for mix audio
+            });
+          }
+
+          // Append to format chapters only if there are any sources
+          if (mp3Sources.length > 0) {
+            format.chapters.push({
+              ...chapterDetails,
+              source: mp3Sources // Store as an array of multiple audio sources
+            });
+          }
         }
       });
+
     });
-    
+
     // Create material objects for eBook and audioBook formats
     if (eBookFormats.length > 0) {
       material.push({
@@ -102,14 +131,14 @@ exports.storeBook = async (req, res) => {
         formats: eBookFormats
       });
     }
-    
+
     if (audioBookFormats.length > 0) {
       material.push({
         type: 'AUDIO_BOOK',
         formats: audioBookFormats
       });
     }
-    
+
 
     // Debugging: Log the final material object
     console.log('Categorized material:', material);
@@ -187,11 +216,11 @@ exports.getAllBooks = async (req, res) => { //retrieving all data
       .limit(limit)
       .populate({
         path: 'authorId',
-        select: 'firstname lastname', 
+        select: 'firstname lastname',
       })
       .populate({
         path: 'library',
-        select: 'name', 
+        select: 'name',
       })
       .sort({ name: 1 });
 
