@@ -43,53 +43,73 @@ exports.storeBook = async (req, res) => {
         completeSource: materialItem.source || '',
         chapters: [] // Initialize empty chapters array
       };
-
+    
+      // Separate formats into eBook or audioBook
       if (materialItem.formatType === 'MP3') {
         audioBookFormats.push(formattedMaterial);
       } else if (['PDF', 'EPUB', 'TEXT'].includes(materialItem.formatType)) {
         eBookFormats.push(formattedMaterial);
       }
     });
-
+    
     // Append chapters to the relevant formats
     chapters.forEach(chapter => {
+      // Construct chapter details for each format
       const chapterDetails = {
         chapterNumber: chapter.chapter_number,
         chapterName: chapter.chapter_name,
-        source: chapter.chapter_source_pdf || chapter.chapter_source_epub || chapter.chapter_source_text || chapter.chapter_source_mp3,
-        voice: chapter.chapter_mp3_voice // Add voice only for MP3
       };
-
+    
+      // For eBook formats (PDF, EPUB, TEXT)
       eBookFormats.forEach(format => {
         if (format.formatType === 'PDF' && chapter.chapter_source_pdf) {
-          format.chapters.push(chapterDetails);
+          format.chapters.push({
+            ...chapterDetails,
+            source: [{ source: chapter.chapter_source_pdf }] // Add PDF source in array
+          });
         } else if (format.formatType === 'EPUB' && chapter.chapter_source_epub) {
-          format.chapters.push(chapterDetails);
+          format.chapters.push({
+            ...chapterDetails,
+            source: [{ source: chapter.chapter_source_epub }] // Add EPUB source in array
+          });
         } else if (format.formatType === 'TEXT' && chapter.chapter_source_text) {
-          format.chapters.push(chapterDetails);
+          format.chapters.push({
+            ...chapterDetails,
+            source: [{ source: chapter.chapter_source_text }] // Add TEXT source in array
+          });
         }
       });
-
+    
+      // For audiobook format (MP3)
       audioBookFormats.forEach(format => {
         if (format.formatType === 'MP3' && chapter.chapter_source_mp3) {
-          format.chapters.push(chapterDetails);
+          format.chapters.push({
+            ...chapterDetails,
+            source: [{
+              source: chapter.chapter_source_mp3,
+              voice: chapter.chapter_mp3_voice || '', // Add voice for MP3 if available
+              duration: chapter.chapter_duration || '' // Add duration for MP3 if available
+            }]
+          });
         }
       });
     });
-
+    
+    // Create material objects for eBook and audioBook formats
     if (eBookFormats.length > 0) {
       material.push({
         type: 'E_BOOK',
         formats: eBookFormats
       });
     }
-
+    
     if (audioBookFormats.length > 0) {
       material.push({
         type: 'AUDIO_BOOK',
         formats: audioBookFormats
       });
     }
+    
 
     // Debugging: Log the final material object
     console.log('Categorized material:', material);
