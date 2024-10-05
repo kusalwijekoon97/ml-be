@@ -11,14 +11,14 @@ const sourceSchema = new Schema({
 const chapterSchema = new Schema({
   chapterNumber: String,
   chapterName: String,
-  source: String,
+  source: [sourceSchema],
 });
 
 const formatSchema = new Schema({
   formatType: String,
   Publisher: String,
   PublishedDate: String,
-  completeSource: String, 
+  completeSource: String,
   chapters: [chapterSchema],
 });
 
@@ -70,7 +70,7 @@ const bookSchema = new Schema({
     ref: "Library",
     required: true,
   },
-  
+
   category: { type: [String], required: false },
   subCategory: [String],
   language: {
@@ -97,6 +97,8 @@ const bookSchema = new Schema({
     type: Boolean,
     default: true
   },
-});
+},
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("Book", bookSchema);

@@ -23,7 +23,7 @@ exports.storeBook = async (req, res) => {
       firstPublisher,
       seriesNumber,
       series,
-      material: { completeMaterials, chapters }
+      material: { completeMaterials, chapters  }
     } = req.body;
 
     const coverImageName = req.file ? await uploadFile(req.file) : null;
@@ -44,7 +44,6 @@ exports.storeBook = async (req, res) => {
         chapters: [] // Initialize empty chapters array
       };
 
-      // Separate formats into eBook or audioBook
       if (materialItem.formatType === 'MP3') {
         audioBookFormats.push(formattedMaterial);
       } else if (['PDF', 'EPUB', 'TEXT'].includes(materialItem.formatType)) {
@@ -54,77 +53,30 @@ exports.storeBook = async (req, res) => {
 
     // Append chapters to the relevant formats
     chapters.forEach(chapter => {
-      // Construct chapter details for each format
       const chapterDetails = {
         chapterNumber: chapter.chapter_number,
         chapterName: chapter.chapter_name,
+        source: chapter.chapter_source_pdf || chapter.chapter_source_epub || chapter.chapter_source_text || chapter.chapter_source_mp3,
+        voice: chapter.chapter_mp3_voice // Add voice only for MP3
       };
 
-      // For eBook formats (PDF, EPUB, TEXT)
       eBookFormats.forEach(format => {
         if (format.formatType === 'PDF' && chapter.chapter_source_pdf) {
-          format.chapters.push({
-            ...chapterDetails,
-            source: [{ source: chapter.chapter_source_pdf }] // Add PDF source in array
-          });
+          format.chapters.push(chapterDetails);
         } else if (format.formatType === 'EPUB' && chapter.chapter_source_epub) {
-          format.chapters.push({
-            ...chapterDetails,
-            source: [{ source: chapter.chapter_source_epub }] // Add EPUB source in array
-          });
+          format.chapters.push(chapterDetails);
         } else if (format.formatType === 'TEXT' && chapter.chapter_source_text) {
-          format.chapters.push({
-            ...chapterDetails,
-            source: [{ source: chapter.chapter_source_text }] // Add TEXT source in array
-          });
+          format.chapters.push(chapterDetails);
         }
       });
 
-      // For audiobook format (MP3)
       audioBookFormats.forEach(format => {
-        if (format.formatType === 'MP3') {
-          const mp3Sources = [];
-
-          // Push male audio file if it exists
-          if (chapter.chapter_source_mp3_male) {
-            mp3Sources.push({
-              source: chapter.chapter_source_mp3_male,
-              voice: 'male', // Explicitly specify the voice type as 'male'
-              duration: chapter.chapter_duration_male || '' // Add duration for male audio
-            });
-          }
-
-          // Push female audio file if it exists
-          if (chapter.chapter_source_mp3_female) {
-            mp3Sources.push({
-              source: chapter.chapter_source_mp3_female,
-              voice: 'female', // Specify voice type as 'female'
-              duration: chapter.chapter_duration_female || '' // Add duration for female audio
-            });
-          }
-
-          // Push mix audio file if it exists
-          if (chapter.chapter_source_mp3_mix) {
-            mp3Sources.push({
-              source: chapter.chapter_source_mp3_mix,
-              voice: 'mix', // Specify voice type as 'mix'
-              duration: chapter.chapter_duration_mix || '' // Add duration for mix audio
-            });
-          }
-
-          // Append to format chapters only if there are any sources
-          if (mp3Sources.length > 0) {
-            format.chapters.push({
-              ...chapterDetails,
-              source: mp3Sources // Store as an array of multiple audio sources
-            });
-          }
+        if (format.formatType === 'MP3' && chapter.chapter_source_mp3) {
+          format.chapters.push(chapterDetails);
         }
       });
-
     });
 
-    // Create material objects for eBook and audioBook formats
     if (eBookFormats.length > 0) {
       material.push({
         type: 'E_BOOK',
@@ -138,7 +90,6 @@ exports.storeBook = async (req, res) => {
         formats: audioBookFormats
       });
     }
-
 
     // Debugging: Log the final material object
     console.log('Categorized material:', material);
@@ -200,9 +151,8 @@ exports.getAllBooks = async (req, res) => { //retrieving all data
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
     const search = req.query.search ? req.query.search.trim() : '';
-    const library = req.query.library ? req.query.library.trim() : '';
 
-    let query = {
+    const query = {
       ...(
         search && {
           $or: [
@@ -212,24 +162,16 @@ exports.getAllBooks = async (req, res) => { //retrieving all data
       ),
     };
 
-    // Add library filter if provided
-    if (library) {
-      query = {
-        ...query,
-        library: library  // Assuming "library" is an ObjectId reference
-      };
-    }
-
     const books = await Book.find(query)
       .skip(skip)
       .limit(limit)
       .populate({
         path: 'authorId',
-        select: 'firstname lastname',
+        select: 'firstname lastname', 
       })
       .populate({
         path: 'library',
-        select: 'name',
+        select: 'name', 
       })
       .sort({ name: 1 });
 
