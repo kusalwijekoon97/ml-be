@@ -93,6 +93,10 @@ const bookSchema = new Schema({
   },
   series: [String],
   material: [materialSchema],
+  deleted: {
+    type: Boolean,
+    default: false,
+  },
   is_active: {
     type: Boolean,
     default: true
