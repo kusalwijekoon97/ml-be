@@ -1,21 +1,17 @@
-// routes\bookRoutes.js
-const express = require("express");
+// routes/bookRoutes.js
 
+const express = require("express");
+const multer = require("multer");
+const upload = require("../utils/multerForMaterials");
 const bookController = require("../controllers/bookController");
-// const { uploadImages } = require("../middleware/uploadImage");
 const router = express.Router();
 
-router.get("/all", bookController.getAll);
-// router.get("/get-all-admin", bookController.getAllAdmin);
-// router.get("/get-by-category/:id", bookController.getBookByCategory);
-// router.post("/get-by-library-admin", bookController.getAllByLibraryAdmin);
-// router.post("/get-by-library", bookController.getAllByLibrary);
-// router.get("/get-book/:id", bookController.getBook);
-// router.get("/toggle-view-library/:id", bookController.ToggleViewLibrary);
-
-router.post("/store", bookController.storeBook);
-// router.post("/update", uploadImages, bookController.editBook);
-// router.post("/search", bookController.search);
-// router.get("/increase-book-count/:id", bookController.increaseCount);
+// Define multer fields configuration based on the frontend form structure
+router.post("/store", upload.single('coverImage'), bookController.storeBook);
+router.get("/all", bookController.getAllBooks);
+router.get("/:id", bookController.showBook);
+// router.post("/update/:id", upload.single('fileBook'), bookController.updateBook);
+router.post("/delete/:id", bookController.deleteBook);
+router.post("/change-status/:id", bookController.changeStatusBook);
 
 module.exports = router;

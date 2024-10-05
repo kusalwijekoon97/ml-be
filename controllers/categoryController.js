@@ -89,22 +89,30 @@ exports.getAllCategories = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
     const search = req.query.search ? req.query.search.trim() : '';
+    const library = req.query.library ? req.query.library.trim() : '';
 
-    const query = search
-      ? {
+    console.log("req-library :" + req.query.library);
+    console.log("req-search :" + req.query.search);
+    
+    // Construct query object
+    const query = {
+      ...(search && {
         $or: [
           { name: { $regex: search, $options: 'i' } }
         ],
-      }
-      : {};
+      }),
+      ...(library && { library }), // If library is provided, filter by library
+    };
 
+    // Fetch filtered categories
     const categories = await Category.find(query)
       .populate('library')
       .populate('subCategories')
       .skip(skip)
       .limit(limit);
 
-    const totalItems = await Category.countDocuments();
+    // Get the total count of filtered items
+    const totalItems = await Category.countDocuments(query);
 
     if (categories.length === 0) {
       return res.status(404).json({
@@ -126,6 +134,157 @@ exports.getAllCategories = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "An error occurred while retrieving categories",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
+
+
+exports.getOpenAllMainCategories = async (req, res) => {
+  try {
+    const categories = await Category.find({ is_active: true })
+      .sort({ name: 1 })
+      .select('name _id');
+
+    // Check if no categories were found
+    if (categories.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No categories found",
+        error: {
+          code: "CATEGORIES_NOT_FOUND",
+          details: "No active categories are available in the system.",
+        },
+      });
+    }
+
+    // Return the list of categories
+    return res.status(200).json({
+      success: true,
+      message: "Categories retrieved successfully",
+      data: categories
+    });
+  } catch (err) {
+    console.error("Error retrieving categories:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
+
+exports.getOpenMainLibFilteredCategories = async (req, res) => { //get all categories according to the selected library
+  try {
+    const { id } = req.params; // Get the parentCategory ID from the request parameters
+
+    // Validate if ID is provided
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Library ID is required",
+        error: {
+          code: "MISSING_ID",
+          details: "No library ID provided.",
+        },
+      });
+    }
+
+    // Find categories by library ID
+    const categories = await Category.find({ 
+      library: id,
+      is_active: true 
+    })
+    .sort({ name: 1 })
+    .select('name _id');
+
+    // Check if no categories were found
+    if (categories.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No categories found",
+        error: {
+          code: "CATEGORIES_NOT_FOUND",
+          details: "No active categories are available for this category.",
+        },
+      });
+    }
+
+    // Return the list of categories
+    return res.status(200).json({
+      success: true,
+      message: "categories retrieved successfully",
+      data: categories
+    });
+  } catch (err) {
+    console.error("Error retrieving categories:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
+
+exports.getOpenAllSubCategories = async (req, res) => {
+  try {
+    const { ids } = req.query; // Get the comma-separated category IDs from the query string
+
+    // Validate if IDs are provided
+    if (!ids) {
+      return res.status(400).json({
+        success: false,
+        message: "Category IDs are required",
+        error: {
+          code: "MISSING_IDS",
+          details: "No category IDs provided.",
+        },
+      });
+    }
+
+    // Convert the comma-separated string into an array
+    const categoryIds = ids.split(',');
+
+    // Find subcategories by parentCategory IDs
+    const sub_categories = await SubCategory.find({ 
+      parentCategory: { $in: categoryIds },
+      is_active: true 
+    })
+    .sort({ name: 1 })
+    .select('name _id');
+
+    // Check if no subcategories were found
+    if (sub_categories.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No subcategories found",
+        error: {
+          code: "SUBCATEGORIES_NOT_FOUND",
+          details: "No active subcategories are available for these categories.",
+        },
+      });
+    }
+
+    // Return the list of subcategories
+    return res.status(200).json({
+      success: true,
+      message: "Subcategories retrieved successfully",
+      data: sub_categories
+    });
+  } catch (err) {
+    console.error("Error retrieving subcategories:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
       error: {
         code: "SERVER_ERROR",
         details: err.message,

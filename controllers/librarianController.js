@@ -143,8 +143,9 @@ exports.getAllLibrarians = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
     const search = req.query.search ? req.query.search.trim() : '';
+    const library = req.query.library ? req.query.library.trim() : '';
 
-    const query = search
+    let query = search
       ? {
         $or: [
           { firstName: { $regex: search, $options: 'i' } },
@@ -155,6 +156,13 @@ exports.getAllLibrarians = async (req, res) => {
         ],
       }
       : {};
+
+      if (library) {
+        query = {
+          ...query,
+          libraries: library  
+        };
+      }
 
     const librarians = await Librarian.find(query)
     .populate('libraries')

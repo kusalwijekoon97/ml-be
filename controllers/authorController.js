@@ -128,6 +128,42 @@ exports.getAllAuthors = async (req, res) => {
   }
 };
 
+exports.getOpenAllAuthors = async (req, res) => {
+  try {
+    const authors = await Author.find({ deleted: false })
+      .sort({ firstname: 1 })
+      .select('firstname lastname _id');
+
+    // Check if no authors were found
+    if (authors.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No authors found",
+        error: {
+          code: "AUTHORS_NOT_FOUND",
+          details: "No active authors are available in the system.",
+        },
+      });
+    }
+
+    // Return the list of authors
+    return res.status(200).json({
+      success: true,
+      message: "Authors retrieved successfully",
+      data: authors
+    });
+  } catch (err) {
+    console.error("Error retrieving authors:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
 
 exports.showAuthor = async (req, res) => {
   try {

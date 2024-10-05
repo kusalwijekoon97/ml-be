@@ -3,6 +3,7 @@ const { PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
 const sharp = require('sharp');
 const s3Client = require("../../utils/s3Client");
+const path = require('path'); // Import path module
 require("dotenv").config();
 
 const uploadFiles = async (files) => {
@@ -11,16 +12,22 @@ const uploadFiles = async (files) => {
       throw new Error("No files selected.");
     }
 
-    const generateFileName = () => Buffer.from(uuidv4() + Date.now().toString()).toString('hex');
+    const generateFileName = (extension) => {
+      const uuidPart = uuidv4().replace(/-/g, '').slice(0, 10);
+      const timestampPart = Date.now().toString().slice(-6);
+      return `${uuidPart}${timestampPart}${extension}`; // Append extension
+    };
 
     const uploadFile = async (file) => {
       let fileBuffer = file.buffer;
+      let fileExtension = path.extname(file.originalname); // Get the original file extension
+
       if (file.mimetype.startsWith('image/')) {
         // Resize the image if it's an image file
         fileBuffer = await sharp(file.buffer).resize({ height: 200, width: 200, fit: "cover" }).toBuffer();
       }
 
-      const fileName = generateFileName();
+      const fileName = generateFileName(fileExtension); // Pass extension to generateFileName
       const params = {
         Bucket: process.env.S3_BUCKET_NAME,
         Key: fileName,

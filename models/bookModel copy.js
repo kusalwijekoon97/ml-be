@@ -18,7 +18,6 @@ const formatSchema = new Schema({
   formatType: String,
   Publisher: String,
   PublishedDate: String,
-  completeSource: String,
   chapters: [chapterSchema],
 });
 
@@ -33,10 +32,6 @@ const bookSchema = new Schema({
     type: String,
     required: true,
   },
-  description: {
-    type: String,
-    required: false,
-  },
   authorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Author",
@@ -46,6 +41,8 @@ const bookSchema = new Schema({
     type: String,
     required: false,
   },
+  category: { type: [String], required: true },
+  subCategory: [String],
   isbn: {
     type: String,
     required: true,
@@ -65,26 +62,18 @@ const bookSchema = new Schema({
     type: String,
     required: true,
   },
-  library: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Library",
-    required: true,
-  },
-
-  category: { type: [String], required: false },
-  subCategory: [String],
   language: {
     type: String,
-    required: false,
+    required: true,
   },
   languageCode: {
     type: String,
-    required: false,
+    required: true,
   },
   firstPublisher: String,
   accessType: {
     type: String,
-    required: false,
+    required: true,
   },
   seriesNumber: Number,
   viewInLibrary: {
@@ -97,8 +86,6 @@ const bookSchema = new Schema({
     type: Boolean,
     default: true
   },
-},
-  { timestamps: true }
-);
+});
 
 module.exports = mongoose.model("Book", bookSchema);
