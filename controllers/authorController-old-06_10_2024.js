@@ -1,7 +1,5 @@
 // controllers\authorController.js
 const Author = require("../models/authorModel");
-const Book = require("../models/bookModel");
-const AuthorAccount = require("../models/authorAccountModel");
 const uploadFile = require("../middleware/fileUpload/uploadFilesMiddleware");
 const s3Client = require("../utils/s3Client");
 const { S3Client, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
@@ -9,12 +7,9 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 exports.storeAuthor = async (req, res) => {
   try {
-    // Destructure data from the request body
-    const { firstname, lastname, died, penName, nationality, firstPublishDate, description, position, addedBooks, accounts } = req.body;
-
+    const { firstname, lastname, died, penName, nationality, description, firstPublishDate, position, income } = req.body;
     // Upload the profile image and get the file name
     const profileImageName = await uploadFile(req.file);
-
     // Create the author record in the database
     const newAuthor = await Author.create({
       firstname,
@@ -22,49 +17,13 @@ exports.storeAuthor = async (req, res) => {
       died,
       penName,
       nationality,
-      firstPublishDate,
       description,
+      firstPublishDate,
       position,
+      income,
       profileImage: profileImageName,
     });
-
-    // If author creation is successful, handle related books and accounts
     if (newAuthor) {
-      // Handle adding books
-      const bookIds = [];
-      for (const book of addedBooks) {
-        const newBook = await Book.create({
-          name: book.added_book_name,
-          authorId: newAuthor._id,
-          isbn: book.added_book_isbn,
-        });
-        bookIds.push(newBook._id);
-      }
-
-      // Update the author's addedBooks with the new book IDs
-      newAuthor.addedBooks = bookIds;
-      await newAuthor.save();
-
-      // Handle adding account details
-      for (const account of accounts) {
-        const newAccount = await AuthorAccount.create({
-          authorId: newAuthor._id,
-          name: account.name,
-          bank: account.bank,
-          branch: account.branch,
-          accountNumber: account.accountNumber,
-          accountType: account.accountType,
-          currency: account.currency,
-          swiftCode: account.swiftCode || '',
-          iban: account.iban || '',
-          description: account.description || '',
-        });
-
-        // Optionally, you could track account IDs if needed
-        newAuthor.accountDetails = newAccount._id;
-      }
-      await newAuthor.save();
-
       return res.status(201).json({
         success: true,
         message: "Author created successfully",
@@ -92,7 +51,6 @@ exports.storeAuthor = async (req, res) => {
     });
   }
 };
-
 
 
 exports.getAllAuthors = async (req, res) => {
