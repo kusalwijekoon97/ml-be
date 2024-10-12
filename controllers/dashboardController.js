@@ -2,11 +2,13 @@
 
 const Author = require("../models/authorModel");
 const Librarian = require("../models/librarianModel");
+const Book = require("../models/bookModel");
 
 exports.getDashboardCounts = async (req, res) => {
   try {
     const countAuthors = await Author.countDocuments({ deleted: false, is_active: true });
     const countLibrarians = await Librarian.countDocuments({ deleted: false, is_active: true });
+    const countBooks = await Book.countDocuments({ deleted: false, is_active: true });
 
     // Send the counts in the response
     return res.status(200).json({
@@ -15,6 +17,7 @@ exports.getDashboardCounts = async (req, res) => {
       data: {
         countAuthors: countAuthors,
         countLibrarians: countLibrarians,
+        countBooks: countBooks,
       },
     });
   } catch (err) {

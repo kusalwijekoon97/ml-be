@@ -11,14 +11,14 @@ const sourceSchema = new Schema({
 const chapterSchema = new Schema({
   chapterNumber: String,
   chapterName: String,
-  source: String,
+  source: [sourceSchema],
 });
 
 const formatSchema = new Schema({
   formatType: String,
   Publisher: String,
   PublishedDate: String,
-  completeSource: String, 
+  completeSource: String,
   chapters: [chapterSchema],
 });
 
@@ -35,7 +35,7 @@ const bookSchema = new Schema({
   },
   description: {
     type: String,
-    required: false,
+    default: '',
   },
   authorId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -44,47 +44,51 @@ const bookSchema = new Schema({
   },
   translatorId: {
     type: String,
-    required: false,
+    default: '',
   },
   isbn: {
     type: String,
     required: true,
     unique: true,
   },
-  coverImage: String,
-  additionalImages: [String],
-  description: {
+  coverImage: {
     type: String,
-    required: true,
+    default: '', 
+  },
+  additionalImages: {
+    type: [String],
+    default: [], 
   },
   publisher: {
     type: String,
-    required: true,
+    default: '', 
   },
   publishDate: {
     type: String,
-    required: true,
+    default: '', 
   },
   library: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Library",
-    required: true,
   },
-  
-  category: { type: [String], required: false },
+
+  category: { 
+    type: [String],
+    default: [],
+     },
   subCategory: [String],
   language: {
     type: String,
-    required: false,
+    default: '',
   },
   languageCode: {
     type: String,
-    required: false,
+    default: '',
   },
   firstPublisher: String,
   accessType: {
     type: String,
-    required: false,
+    default: '',
   },
   seriesNumber: Number,
   viewInLibrary: {
@@ -93,10 +97,16 @@ const bookSchema = new Schema({
   },
   series: [String],
   material: [materialSchema],
+  deleted: {
+    type: Boolean,
+    default: false,
+  },
   is_active: {
     type: Boolean,
     default: true
-  }
-});
+  },
+},
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("Book", bookSchema);
