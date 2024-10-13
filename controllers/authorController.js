@@ -302,8 +302,8 @@ exports.deleteAuthor = async (req, res) => {
   }
 };
 
-
-exports.updateAuthor = async (req, res) => {
+// author update
+exports.updateAuthorGeneralInfo = async (req, res) => {
   try {
     const authorId = req.params.id;
 

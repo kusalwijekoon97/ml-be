@@ -8,7 +8,7 @@ router.post("/store", upload.single('profileImage'), authorController.storeAutho
 router.get("/all", authorController.getAllAuthors);
 router.get("/all-open", authorController.getOpenAllAuthors);
 router.get("/:id", authorController.showAuthor);
-router.post("/update/:id", upload.single('profileImage'), authorController.updateAuthor);
+router.post("/update/:id", upload.single('profileImage'), authorController.updateAuthorGeneralInfo);
 router.post("/delete/:id", authorController.deleteAuthor);
 router.post("/change-status/:id", authorController.changeStatusAuthor);
 
