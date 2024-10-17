@@ -9,6 +9,8 @@ router.get("/all", authorController.getAllAuthors);
 router.get("/all-open", authorController.getOpenAllAuthors);
 router.get("/:id", authorController.showAuthor);
 router.post("/update/:id", upload.single('profileImage'), authorController.updateAuthorGeneralInfo);
+router.post("/update/account-info/:id", authorController.updateAuthorAccountInfo);
+// router.post("/update/added-book-info/:id", authorController.updateAuthorBookList);
 router.post("/delete/:id", authorController.deleteAuthor);
 router.post("/change-status/:id", authorController.changeStatusAuthor);
 
