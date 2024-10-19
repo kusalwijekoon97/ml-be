@@ -284,6 +284,81 @@ exports.showAuthor = async (req, res) => {
 };
 
 
+exports.getAuthorBooks = async (req, res) => { //retrieving all data
+  try {
+    const authorId = req.params.id;
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.search ? req.query.search.trim() : '';
+    const library = req.query.library ? req.query.library.trim() : '';
+
+    let query = {
+      authorId,
+      ...(
+        search && {
+          $or: [
+            { name: { $regex: search, $options: 'i' } },
+          ],
+        }
+      ),
+    };
+
+    // Add library filter if provided
+    if (library) {
+      query = {
+        ...query,
+        library: library  // Assuming "library" is an ObjectId reference
+      };
+    }
+
+    const books = await Book.find(query)
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: 'library',
+        select: 'name',
+      })
+      .sort({ name: 1 });
+
+    const totalItems = await Book.countDocuments(query);
+
+
+    // Check if any books were found
+    if (books.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No books found",
+        error: {
+          code: "NO_BOOKS_FOUND",
+          details: "There are no books available in the database.",
+        },
+      });
+    }
+
+    // Return the list of books
+    return res.status(200).json({
+      success: true,
+      message: "Books retrieved successfully",
+      data: books,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+      currentPage: page,
+    });
+  } catch (err) {
+    console.error("Error retrieving books:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
+
 exports.deleteAuthor = async (req, res) => {
   try {
     const authorId = req.params.id;

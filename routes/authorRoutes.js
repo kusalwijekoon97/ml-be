@@ -8,6 +8,7 @@ router.post("/store", upload.single('profileImage'), authorController.storeAutho
 router.get("/all", authorController.getAllAuthors);
 router.get("/all-open", authorController.getOpenAllAuthors);
 router.get("/:id", authorController.showAuthor);
+router.get("/books/:id", authorController.getAuthorBooks);
 router.post("/update/:id", upload.single('profileImage'), authorController.updateAuthorGeneralInfo);
 router.post("/update/account-info/:id", authorController.updateAuthorAccountInfo);
 // router.post("/update/added-book-info/:id", authorController.updateAuthorBookList);
