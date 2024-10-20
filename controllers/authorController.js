@@ -2,6 +2,8 @@
 const Author = require("../models/authorModel");
 const Book = require("../models/bookModel");
 const AuthorAccount = require("../models/authorAccountModel");
+const AuthorIncome = require('../models/authorIncomeModel');
+const AuthorSocialMedia = require('../models/authorSocialMediaModel');
 const uploadFile = require("../middleware/fileUpload/uploadFilesMiddleware");
 const s3Client = require("../utils/s3Client");
 const { S3Client, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
@@ -46,6 +48,7 @@ exports.storeAuthor = async (req, res) => {
       await newAuthor.save();
 
       // Handle adding account details
+      const accountIds = [];
       for (const account of accounts) {
         const newAccount = await AuthorAccount.create({
           authorId: newAuthor._id,
@@ -59,10 +62,9 @@ exports.storeAuthor = async (req, res) => {
           iban: account.iban || '',
           description: account.description || '',
         });
-
-        // Optionally, you could track account IDs if needed
-        newAuthor.accountDetails = newAccount._id;
+        accountIds.push(newAccount._id);
       }
+      newAuthor.accountDetails = accountIds;
       await newAuthor.save();
 
       return res.status(201).json({
@@ -93,7 +95,53 @@ exports.storeAuthor = async (req, res) => {
   }
 };
 
+exports.storeAuthorPayment = async (req, res) => {
+  try {
+    console.log("Request body:", req.body);
 
+    const authorId = req.params.id;
+
+    // Destructure data from the request body
+    const { paymentAmount, paymentDate, paymentAccountId, paymentStatus, paymentDescription, invoice } = req.body;
+
+    // Create the author payment record in the database
+    const newPayment = await AuthorIncome.create({
+      authorId,
+      paymentAmount,
+      paymentDate,
+      paymentAccountId,
+      paymentStatus,
+      paymentDescription,
+      invoice,
+    });
+
+    // Update the AuthorAccount to include this new income reference
+    await AuthorAccount.findByIdAndUpdate(paymentAccountId, {
+      $push: { incomes: newPayment._id },
+    });
+
+    // Update the Author to include this new income reference (if needed)
+    await Author.findByIdAndUpdate(authorId, {
+      income: newPayment._id,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Author payment created successfully",
+      data: newPayment,
+    });
+  } catch (err) {
+    console.error("Error creating author payment:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
 
 exports.getAllAuthors = async (req, res) => {
   try {
@@ -101,9 +149,10 @@ exports.getAllAuthors = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
     const search = req.query.search ? req.query.search.trim() : '';
+    console.log("data");
 
     const query = {
-      deleted: false,
+      isDeleted: false,
       ...(
         search && {
           $or: [
@@ -114,14 +163,15 @@ exports.getAllAuthors = async (req, res) => {
         }
       ),
     };
+    console.log("query:", query);
 
     const authors = await Author.find(query)
       .skip(skip)
       .limit(limit)
       .sort({ firstName: 1 });
-
+    console.log("authors : " + authors);
     const totalItems = await Author.countDocuments(query);
-
+    console.log("count : " + totalItems);
     // Generate a signed URL for each author's profile image
     for (const author of authors) {
       if (author.profileImage) {
@@ -211,7 +261,12 @@ exports.showAuthor = async (req, res) => {
   try {
     const authorId = req.params.id;
     // Find the author by ID
-    const author = await Author.findById(authorId);
+    const author = await Author.findById(authorId)
+      .populate('addedBooks')
+      .populate('accountDetails')
+      .populate('income')
+      .populate('socialMedia');
+
     if (!author) {
       return res.status(404).json({
         success: false,
@@ -234,14 +289,156 @@ exports.showAuthor = async (req, res) => {
       author.imageUrl = url;
     }
 
+    const responseData = {
+      generalInfo: {
+        _id: author._id,
+        firstname: author.firstname,
+        lastname: author.lastname,
+        died: author.died,
+        penName: author.penName,
+        nationality: author.nationality,
+        description: author.description,
+        firstPublishDate: author.firstPublishDate,
+        profileImage: author.profileImage,
+        imageUrl: author.imageUrl || null,
+        position: author.position,
+        isActive: author.isActive,
+        isDeleted: author.isDeleted,
+      },
+      addedBooks: author.addedBooks,
+      accountInfo: author.accountDetails,
+      incomeInfo: author.income,
+      socialMedia: author.socialMedia,
+    };
     // Return the author details
     return res.status(200).json({
       success: true,
       message: "Author retrieved successfully",
-      data: author,
+      data: responseData,
     });
   } catch (err) {
     console.error("Error retrieving author:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
+
+
+exports.getAuthorBooks = async (req, res) => { //retrieving all data
+  try {
+    const authorId = req.params.id;
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.search ? req.query.search.trim() : '';
+    const library = req.query.library ? req.query.library.trim() : '';
+
+    let query = {
+      authorId,
+      ...(
+        search && {
+          $or: [
+            { name: { $regex: search, $options: 'i' } },
+          ],
+        }
+      ),
+    };
+
+    // Add library filter if provided
+    if (library) {
+      query = {
+        ...query,
+        library: library  // Assuming "library" is an ObjectId reference
+      };
+    }
+
+    const books = await Book.find(query)
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: 'library',
+        select: 'name',
+      })
+      .sort({ name: 1 });
+
+    const totalItems = await Book.countDocuments(query);
+
+
+    // Check if any books were found
+    if (books.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No books found",
+        error: {
+          code: "NO_BOOKS_FOUND",
+          details: "There are no books available in the database.",
+        },
+      });
+    }
+
+    // Return the list of books
+    return res.status(200).json({
+      success: true,
+      message: "Books retrieved successfully",
+      data: books,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+      currentPage: page,
+    });
+  } catch (err) {
+    console.error("Error retrieving books:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
+
+
+exports.getAuthorPayments = async (req, res) => {
+  try {
+    const authorId = req.params.id;
+
+    // Construct the query with required authorId and optional query filters
+    let query = {
+      authorId,
+      ...req.query, // Allows filtering by additional query parameters (e.g., paymentStatus)
+    };
+
+    // Find payments with the constructed query and sort by paymentDate in descending order
+    const payments = await AuthorIncome.find(query).sort({ paymentDate: -1 });
+
+    // Check if any payments were found
+    if (!payments || payments.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No payments found",
+        error: {
+          code: "NO_PAYMENTS_FOUND",
+          details: "There are no payments available in the database for this author.",
+        },
+      });
+    }
+
+    // Return the list of payments
+    return res.status(200).json({
+      success: true,
+      message: "Payments retrieved successfully",
+      data: payments,
+    });
+  } catch (err) {
+    console.error("Error retrieving payments:", err);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -302,8 +499,8 @@ exports.deleteAuthor = async (req, res) => {
   }
 };
 
-
-exports.updateAuthor = async (req, res) => {
+// author general info update
+exports.updateAuthorGeneralInfo = async (req, res) => {
   try {
     const authorId = req.params.id;
 
@@ -362,6 +559,101 @@ exports.updateAuthor = async (req, res) => {
     });
   }
 };
+
+// author account info update
+exports.updateAuthorAccountInfo = async (req, res) => {
+  try {
+    const authorId = req.params.id;
+    const { accounts } = req.body;
+
+    // console.log("Raw accounts:", accounts);
+
+    // Find the author by ID
+    const author = await Author.findById(authorId);
+    if (!author) {
+      return res.status(404).json({
+        success: false,
+        message: "Author not found",
+        error: {
+          code: "AUTHOR_NOT_FOUND",
+          details: "The author with the provided ID does not exist.",
+        },
+      });
+    }
+
+    // Fetch existing accounts for the author
+    const existingAccounts = await AuthorAccount.find({ authorId });
+    
+    // Create a set of existing account IDs for easy lookup
+    const existingAccountIds = new Set(existingAccounts.map(account => account._id.toString()));
+    
+    // Create a set of incoming account IDs to identify which accounts to keep
+    const incomingAccountIds = new Set(accounts.map(account => account._id).filter(id => id));
+
+    // Delete accounts that are not present in the incoming data
+    for (const account of existingAccounts) {
+      if (!incomingAccountIds.has(account._id.toString())) {
+        await AuthorAccount.findByIdAndDelete(account._id);
+      }
+    }
+
+    // Iterate through incoming accounts to update or create
+    for (const account of accounts) {
+      // console.log(account._id ? 'Updating account' : 'Creating new account', account);
+
+      if (account._id && account._id.trim()) { // If an ID exists, update the account
+        await AuthorAccount.findByIdAndUpdate(account._id, {
+          name: account.name,
+          bank: account.bank,
+          branch: account.branch,
+          accountNumber: account.accountNumber,
+          accountType: account.accountType,
+          currency: account.currency,
+          swiftCode: account.swiftCode || '',
+          iban: account.iban || '',
+          description: account.description || '',
+        }, { new: true });
+      } else { // If no ID exists, create a new account
+        const newAccount = await AuthorAccount.create({
+          authorId,
+          name: account.name,
+          bank: account.bank,
+          branch: account.branch,
+          accountNumber: account.accountNumber,
+          accountType: account.accountType,
+          currency: account.currency,
+          swiftCode: account.swiftCode || '',
+          iban: account.iban || '',
+          description: account.description || '',
+        });
+        author.accountDetails.push(newAccount._id);
+      }
+    }
+    await author.save();
+
+    // Fetch the updated author with the latest accounts (if needed)
+    const updatedAuthor = await Author.findById(authorId).populate('accountDetails');
+    console.log('Updated author data:', updatedAuthor);
+
+    // Return success response
+    return res.status(200).json({
+      success: true,
+      message: "Author's account details updated successfully",
+      data: updatedAuthor,
+    });
+  } catch (error) {
+    console.error("Error updating author:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: error.message,
+      },
+    });
+  }
+};
+
 
 
 exports.changeStatusAuthor = async (req, res) => {
