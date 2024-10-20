@@ -95,7 +95,53 @@ exports.storeAuthor = async (req, res) => {
   }
 };
 
+exports.storeAuthorPayment = async (req, res) => {
+  try {
+    console.log("Request body:", req.body);
 
+    const authorId = req.params.id;
+
+    // Destructure data from the request body
+    const { paymentAmount, paymentDate, paymentAccountId, paymentStatus, paymentDescription, invoice } = req.body;
+
+    // Create the author payment record in the database
+    const newPayment = await AuthorIncome.create({
+      authorId,
+      paymentAmount,
+      paymentDate,
+      paymentAccountId,
+      paymentStatus,
+      paymentDescription,
+      invoice,
+    });
+
+    // Update the AuthorAccount to include this new income reference
+    await AuthorAccount.findByIdAndUpdate(paymentAccountId, {
+      $push: { incomes: newPayment._id },
+    });
+
+    // Update the Author to include this new income reference (if needed)
+    await Author.findByIdAndUpdate(authorId, {
+      income: newPayment._id,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Author payment created successfully",
+      data: newPayment,
+    });
+  } catch (err) {
+    console.error("Error creating author payment:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
 
 exports.getAllAuthors = async (req, res) => {
   try {
@@ -358,6 +404,52 @@ exports.getAuthorBooks = async (req, res) => { //retrieving all data
     });
   }
 };
+
+
+exports.getAuthorPayments = async (req, res) => {
+  try {
+    const authorId = req.params.id;
+
+    // Construct the query with required authorId and optional query filters
+    let query = {
+      authorId,
+      ...req.query, // Allows filtering by additional query parameters (e.g., paymentStatus)
+    };
+
+    // Find payments with the constructed query and sort by paymentDate in descending order
+    const payments = await AuthorIncome.find(query).sort({ paymentDate: -1 });
+
+    // Check if any payments were found
+    if (!payments || payments.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No payments found",
+        error: {
+          code: "NO_PAYMENTS_FOUND",
+          details: "There are no payments available in the database for this author.",
+        },
+      });
+    }
+
+    // Return the list of payments
+    return res.status(200).json({
+      success: true,
+      message: "Payments retrieved successfully",
+      data: payments,
+    });
+  } catch (err) {
+    console.error("Error retrieving payments:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: err.message,
+      },
+    });
+  }
+};
+
 
 exports.deleteAuthor = async (req, res) => {
   try {

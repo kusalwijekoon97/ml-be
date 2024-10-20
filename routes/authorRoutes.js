@@ -4,14 +4,19 @@ const authorController = require("../controllers/authorController");
 const upload = require("../utils/multer");
 const router = express.Router();
 
-router.post("/store", upload.single('profileImage'), authorController.storeAuthor);
+// GET Routes
 router.get("/all", authorController.getAllAuthors);
 router.get("/all-open", authorController.getOpenAllAuthors);
 router.get("/:id", authorController.showAuthor);
 router.get("/books/:id", authorController.getAuthorBooks);
+router.get("/payments/:id", authorController.getAuthorPayments);
+
+// POST Routes
+router.post("/store", upload.single('profileImage'), authorController.storeAuthor);
+router.post("/store/payment/:id", authorController.storeAuthorPayment);
 router.post("/update/:id", upload.single('profileImage'), authorController.updateAuthorGeneralInfo);
 router.post("/update/account-info/:id", authorController.updateAuthorAccountInfo);
-// router.post("/update/added-book-info/:id", authorController.updateAuthorBookList);
+// router.post("/update/added-book-info/:id", authorController.updateAuthorBookList); // Uncomment if needed
 router.post("/delete/:id", authorController.deleteAuthor);
 router.post("/change-status/:id", authorController.changeStatusAuthor);
 
