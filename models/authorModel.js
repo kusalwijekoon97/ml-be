@@ -17,7 +17,7 @@ const authorSchema = new Schema({
   income: { type: Schema.Types.ObjectId, ref: "AuthorIncome" }, // Reference to AuthorIncome
   socialMedia: { type: Schema.Types.ObjectId, ref: "AuthorSocialMedia" }, // Reference to AuthorSocialMedia
   addedBooks: [{ type: Schema.Types.ObjectId, ref: "Book" }], // Array of references to Books
-  accountDetails: { type: Schema.Types.ObjectId, ref: "AuthorAccount" } // Reference to AuthorAccount
+  accountDetails: [{ type: Schema.Types.ObjectId, ref: "AuthorAccount" }] // Reference to AuthorAccount
 }, 
   { timestamps: true }
 );
